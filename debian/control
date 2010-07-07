@@ -2,8 +2,9 @@ Source: clusto
 Section: net
 Priority: extra
 Maintainer: Jeremy Grosser <jgrosser@digg.com>
+Uploaders: Ian Eure <ian@simplegeo.com>, SimpleGeo Nerds <nerds@simplegeo.com>
 Build-Depends: cdbs, debhelper (>= 5), python-sqlalchemy, python-setuptools, python-support (>= 0.3), python-all-dev
-Standards-Version: 3.7.2
+Standards-Version: 3.8.4
 
 Package: clusto
 Architecture: all
