@@ -6,7 +6,7 @@ Build-Depends: cdbs, debhelper (>= 5), python-sqlalchemy, python-setuptools, pyt
 Standards-Version: 3.7.2
 
 Package: clusto
-Architecture: any
+Architecture: all
 Depends: ${python:Depends}, ipython, python-sqlalchemy, python-scapy (>= 2.0.1), python-ipy, python-libvirt
 Suggests: python-psycopg2, python-mysqldb
 Provides: ${python:Provides}
