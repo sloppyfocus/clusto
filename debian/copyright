@@ -7,9 +7,8 @@ Upstream Author: Ron Gorodetzky <ron@digg.com>
 
 Copyright: 2008, 2009 Digg, Inc.
 
-License:
+License: 3-Clause BSD
 
-Proprietary.
-
-The Debian packaging is (C) 2009, Jeremy Grosser <jgrosser@digg.com> and
-is licensed under the GPL, see `/usr/share/common-licenses/GPL'.
+The Debian packaging is (C) 2009 Digg, Inc.
+and is licensed under the 3-Clause BSD license
+see LICENSE in the root of this repository.
