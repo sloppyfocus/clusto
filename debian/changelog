@@ -1,4 +1,4 @@
-clusto (0.5.35) unstable; urgency=low
+clusto (0.5.35) lucid; urgency=low
 
   * Put a proper description in debian/control
 

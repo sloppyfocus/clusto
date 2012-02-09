@@ -38,6 +38,7 @@ setuptools.setup(
             'clusto-pool = clusto.commands.pool:main',
             'clusto-reboot = clusto.commands.reboot:main',
             'clusto-shell = clusto.commands.shell:main',
+            'clusto-list-all = clusto.commands.list_all:main',
         ],
     },
     zip_safe = False,
