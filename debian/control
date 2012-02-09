@@ -2,12 +2,15 @@ Source: clusto
 Section: net
 Priority: extra
 Maintainer: Jeremy Grosser <jeremy@synack.me>
-Build-Depends: cdbs, debhelper (>= 5), python-setuptools, python-support (>= 0.3)
-Standards-Version: 3.7.2
+Build-Depends: cdbs, debhelper (>= 5), python-setuptools, python-support (>= 0.3), python-all
+Standards-Version: 3.9.1
 
 Package: clusto
 Architecture: all
-Depends: ${python:Depends}, ipython, python-sqlalchemy, python-ipy, python-webob, python-argparse
+Depends: ${misc:Depends}, ${python:Depends}, ipython, python-sqlalchemy, python-ipy, python-webob, python-argparse
 Suggests: python-psycopg2, python-mysqldb, python-simplejson, python-sqlite, python-memcache
 Provides: ${python:Provides}
-Description: Clusto is a tool/library for organizing and managing infrastructure
+Description: A set of abstractions for server infrastructure
+ With Clusto, you can represent your infrastructure using a number of
+ pre-defined types (racks, servers, switches, etc) or you can define your
+ own types in a simple Python framework.
