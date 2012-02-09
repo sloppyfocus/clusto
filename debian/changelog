@@ -1,3 +1,9 @@
+clusto (0.5.36) lucid; urgency=low
+
+  * Add clusto-list-all command
+
+ -- Jeremy Grosser <jeremy@synack.me>  Thu, 09 Feb 2012 22:21:37 +0000
+
 clusto (0.5.35) lucid; urgency=low
 
   * Put a proper description in debian/control
