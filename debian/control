@@ -1,7 +1,7 @@
 Source: clusto
 Section: net
 Priority: extra
-Maintainer: Jeremy Grosser <jgrosser@digg.com>
+Maintainer: Jeremy Grosser <jeremy@synack.me>
 Build-Depends: cdbs, debhelper (>= 5), python-setuptools, python-support (>= 0.3)
 Standards-Version: 3.7.2
 
