@@ -1,3 +1,9 @@
+clusto (0.5.33-2) unstable; urgency=low
+
+  * Clean up the Depends list in debian/control
+
+ -- Jeremy Grosser <jeremy@synack.me>  Thu, 09 Feb 2012 18:13:49 +0000
+
 clusto (0.5.33-1.1) unstable; urgency=low
 
   * Making basicrack.py more portable by adding _ensure_device_compatible function
