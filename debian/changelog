@@ -1,3 +1,10 @@
+clusto (0.5.34-1) unstable; urgency=low
+
+  * Add a BasicCage driver.
+  * Packaging: Add missing dependency on python-setuptools.
+
+ -- Paul Lathrop <paul@tertiusfamily.net>  Tue, 28 Feb 2012 01:50:47 -0800
+
 clusto (0.5.33-2) unstable; urgency=low
 
   * Clean up the Depends list in debian/control
