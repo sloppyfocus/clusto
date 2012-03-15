@@ -7,7 +7,7 @@ Standards-Version: 3.9.1
 
 Package: clusto
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, ipython, python-sqlalchemy, python-ipy, python-webob, python-argparse
+Depends: ${misc:Depends}, ${python:Depends}, ipython, python-sqlalchemy, python-ipy, python-webob, python-argparse, python-pkg-resources
 Suggests: python-psycopg2, python-mysqldb, python-simplejson, python-sqlite, python-memcache
 Provides: ${python:Provides}
 Description: A set of abstractions for server infrastructure
