@@ -23,17 +23,19 @@ class ListPool(script_helper.Script):
             help='Print names instead of ip addresses (defaults to False)')
         parser.add_argument('--recursive', default=False, action='store_true',
             help='Search resursively on both pools (defaults to False)')
-        parser.add_argument('pool', nargs=2, metavar='pool',
-            help='Pools to query (required)')
+        parser.add_argument('pool', nargs='+', metavar='pool',
+            help='Pool(s) to query (1 required, 2 maximum)')
 
     def add_subparser(self, subparsers):
         parser = self._setup_subparser(subparsers)
         self._add_arguments(parser)
 
     def run(self, args):
+        if len(args.pool) > 2:
+            self.warn('Specified more than 2 pools, using only first 2')
         self.debug('Querying for pools %s' % args.pool)
         self.debug('Recursive search = %s' % args.recursive)
-        serverset = clusto.get_from_pools(args.pool,
+        serverset = clusto.get_from_pools(args.pool[:2],
             clusto_types=[drivers.servers.BasicServer],
             search_children=args.recursive)
         for server in serverset:
