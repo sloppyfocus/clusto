@@ -91,6 +91,8 @@ class EntityAPI(object):
         Optional parameters are "subkey" and "number"
         '''
         kwargs = dict(request.params.items())
+        if 'number' in kwargs:
+            kwargs['number'] = int(kwargs['number'])
         self.obj.set_attr(**kwargs)
         return self.show(request)
 
