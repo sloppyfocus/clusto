@@ -6,8 +6,9 @@
 # Copyright 2009, Ron Gorodetzky <ron@fflick.com>
 
 import argparse
-from IPython.Shell import IPShellEmbed
 import sys
+
+import IPython
 
 import clusto
 from clusto import script_helper
@@ -27,6 +28,8 @@ class Shell(script_helper.Script):
 
     def run(self, args):
         banner = None
+        if IPython.__version__ >= '0.11':
+            config=IPython.config.application.Config()
         if not sys.stdin.isatty() or args.files:
             opts = [
                 '-noautoindent',
@@ -40,17 +43,40 @@ class Shell(script_helper.Script):
                 '-prompt_out', '\x00',
                 '-xmode', 'Plain',
             ]
+            if IPython.__version__ >= '0.11':
+	        config.TerminalInteractiveShell.autoindent = False
+	        config.TerminalIPythonApp.display_banner = False
+	        config.TerminalInteractiveShell.color_info = False
+	        config.TerminalInteractiveShell.confirm_exit = False
+	        config.TerminalInteractiveShell.quiet = True
+	        config.TerminalIPythonApp.ignore_old_config = True
+	        config.TerminalInteractiveShell.separate_in = ''
+                config.PromptManager.in_template = '\x00'
+                config.PromptManager.in_template1 = '\x00'
+                config.PromptManager.in_template2 = '\x00'
+                config.PromptManager.out_template = '\x00'
+	        config.TerminalInteractiveShell.xmode = 'Plain'
         else:
             opts = [
                 '-prompt_in1', 'clusto [\#]> ',
                 '-prompt_out', 'out [\#]> ',
             ]
             banner = '\nThis is the clusto shell. Respect it.'
+            if IPython.__version__ >= '0.11':
+                config.PromptManager.in_template = 'clusto [\#]> '
+                config.PromptManager.out_template = 'out [\#]> '
         if args.loglevel == 'DEBUG':
             opts.append('-debug')
-        ipshell = IPShellEmbed(opts)
-        if banner:
-            ipshell.set_banner(banner)
+	    config.debug = True
+
+        if IPython.__version__ < '0.11':
+            from IPython.Shell import IPShellEmbed
+            ipshell = IPShellEmbed(opts)
+            if banner:
+                ipshell.set_banner(banner)
+        else:
+            from IPython.frontend.terminal import embed
+            ipshell = embed.InteractiveShellEmbed(banner1=banner, config=config)
         ipshell()
 
     def _add_arguments(self, parser):
