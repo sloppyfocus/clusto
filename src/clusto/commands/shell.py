@@ -55,7 +55,7 @@ class Shell(script_helper.Script):
                 config.PromptManager.in_template1 = '\x00'
                 config.PromptManager.in_template2 = '\x00'
                 config.PromptManager.out_template = '\x00'
-        config.TerminalInteractiveShell.xmode = 'Plain'
+                config.TerminalInteractiveShell.xmode = 'Plain'
         else:
             opts = [
                 '-prompt_in1', 'clusto [\#]> ',
