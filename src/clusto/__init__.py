@@ -8,10 +8,12 @@ from sqlalchemy.pool import SingletonThreadPool
 
 from clusto import drivers
 
+import ConfigParser
 import threading
 import logging
 import time
 import re
+import os
 
 driverlist = DRIVERLIST
 typelist = TYPELIST
@@ -27,7 +29,7 @@ def connect(config, echo=False):
     @param config: the config object
     """
 
-    SESSION.configure(bind=create_engine(config.get('clusto', 'dsn'),
+    SESSION.configure(bind=create_engine(config.get('dsn'),
                                          echo=echo,
                                          poolclass=SingletonThreadPool,
                                          pool_recycle=600
@@ -35,14 +37,37 @@ def connect(config, echo=False):
 
     SESSION.clusto_version = None
 
+    memcache_servers = config.get('memcached', None)
+    if not memcache_servers:
+        return
+
     try:
-        memcache_servers = config.get('clusto', 'memcached').split(',')
+        memcache_servers = memcache_servers.split(',')
 #       Memcache should only be imported if we're actually using it, yes?
         import memcache
-        logging.info('Memcache server list: %s' % config.get('clusto', 'memcached'))
+        logging.info('Memcache server list: %s' % memcache_servers)
         SESSION.memcache = memcache.Client(memcache_servers, debug=0)
-    except:
+    except ImportError, e:
+        logging.warning('Unable to configure memcached: %s' % str(e))
         SESSION.memcache = None
+
+
+def init_script(**kwargs):
+    config = {}
+
+    path = os.environ.get('CLUSTOCONFIG', '/etc/clusto/clusto.conf')
+    if os.path.exists(path):
+        p = ConfigParser.SafeConfigParser()
+        p.readfp(open(path, 'r'))
+        if p.has_section('clusto'):
+            config.update(dict(p.items('clusto')))
+
+    if 'CLUSTODSN' in os.environ:
+        config['dsn'] = os.environ['CLUSTODSN']
+    if 'CLUSTOPLUGINS' in os.environ:
+        config['plugins'] = os.environ['CLUSTOPLUGINS']
+    config.update(kwargs)
+    return connect(config)
 
 
 def checkDBcompatibility(dbver):

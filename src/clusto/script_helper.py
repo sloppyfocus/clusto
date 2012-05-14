@@ -147,7 +147,8 @@ class Script(object):
             filename = args.config
         self.config = load_config(filename, args.dsn, logger)
         self.debug('Connecting to %s' % self.config.get('clusto', 'dsn'))
-        clusto.connect(self.config)
+        config = dict(self.config.items('clusto'))
+        clusto.connect(config)
 
         return self.config
 
