@@ -39,6 +39,7 @@ def connect(config, echo=False):
 
     memcache_servers = config.get('memcached', None)
     if not memcache_servers:
+        SESSION.memcache = None
         return
 
     try:
