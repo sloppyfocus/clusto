@@ -22,7 +22,7 @@ setuptools.setup(
     install_requires = [
         'argparse',
         'sqlalchemy>=0.6.3,<0.7',
-        'IPython>=0.10,<0.11',
+        'IPython>=0.10',
         'IPy',
         'WebOb',
     ],
