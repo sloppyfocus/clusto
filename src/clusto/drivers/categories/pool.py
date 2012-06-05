@@ -35,6 +35,9 @@ class Pool(Driver):
         if d in self:
             raise PoolException("%s is already in pool %s." % (d, self))
 
+        if d.parents(clusto_drivers=[ExclusivePool]):
+            raise PoolException("%s is in ExclusivePool %s" % (d, self))
+
         self.add_attr("_contains", d, number=True)
 
 
