@@ -67,7 +67,8 @@ class IPMixin:
             else:
                 ipman = IPManager.get_ip_manager(ip)
 
-            ipattrs = ipman.get_resource_attrs(self, ip)
+            number = ipman.get_resource_number(self, ip)
+            ipattrs = ipman.get_resource_attrs(self, ip, number=number)
 
             if porttype is not None and portnum is not None:
                 self.set_port_attr(porttype, portnum, 'osportname', osportname)
