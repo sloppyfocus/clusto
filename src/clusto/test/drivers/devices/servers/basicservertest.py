@@ -112,8 +112,8 @@ class BasicServerTest(testbase.ClustoTestBase):
 
         s1 = clusto.get_by_name('bs1')
 
-        ipm1 = IPManager('ipman1', netmask='255.255.0.0', baseip='10.0.0.1', gateway='10.0.0.1')
-        ipm2 = IPManager('ipman2', netmask='255.255.0.0', baseip='10.0.1.1', gateway='10.0.1.1')
+        ipm1 = IPManager('ipman1', netmask='255.255.255.0', baseip='10.0.0.1', gateway='10.0.0.1')
+        ipm2 = IPManager('ipman2', netmask='255.255.255.0', baseip='10.0.1.1', gateway='10.0.1.1')
 
         self.assertRaises(Exception, s1.bind_ip_to_osport, '10.0.0.100', 'eth0', porttype='nic-eth')
         self.assertRaises(Exception, s1.bind_ip_to_osport, '10.0.0.100', 'eth0', portnum=0)
@@ -128,11 +128,4 @@ class BasicServerTest(testbase.ClustoTestBase):
         s1.bind_ip_to_osport('10.0.1.100', 'eth1')#, porttype='nic-eth', portnum=2)
 
         self.assertEqual(IPManager.get_devices('10.0.1.100'), [s1])
-        
-        self.assertRaises(Exception, s1.bind_ip_to_osport, '10.0.0.100', 'eth0', porttype='nic-eth')
-        self.assertRaises(Exception, s1.bind_ip_to_osport, '10.0.0.100', 'eth0', portnum=0)
-        
-        s1.bind_ip_to_osport('10.0.0.100', 'eth0')#, porttype='nic-eth', portnum=1)
-
-        self.assertEqual(IPManager.get_devices('10.0.0.100'), [s1])
         
