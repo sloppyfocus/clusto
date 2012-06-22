@@ -23,10 +23,9 @@ class Console(script_helper.Script):
         script_helper.Script.__init__(self)
 
     def _add_arguments(self, parser):
-        user = os.environ.get('USER')
-        parser.add_argument('--user', '-u', default=user,
-            help='SSH User (you can also set this in clusto.conf too'
-                 'in console.user: --user > clusto.conf:console.user > "%s")' % user)
+        parser.add_argument('--user', '-u',
+            help='SSH User (you can also set this in clusto.conf '
+                 'in console.user: --user > clusto.conf:console.user')
         parser.add_argument('server', nargs=1,
             help='Object to console to (IP or name)')
 
