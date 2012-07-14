@@ -49,9 +49,10 @@ class Device(Driver):
 
         self.del_attrs("fqdn", number=True, value=fqdn)
 
-    def _power_captcha(self):
+    def _power_captcha(self, action='reboot'):
         while True:
-            sys.stdout.write('Are you sure you want to reboot %s (yes/no)? ' % self.name)
+            sys.stdout.write('Are you sure you want to %s %s (yes/no)? ' %
+                (action, self.name,))
             line = sys.stdin.readline().rstrip('\r\n')
             if line == 'yes':
                 return True
@@ -60,7 +61,7 @@ class Device(Driver):
             sys.stdout.write('"yes" or "no", please\n')
 
     def power_on(self, captcha=True):
-        if captcha and not self._power_captcha():
+        if captcha and not self._power_captcha('power on'):
             return
 
         ports_set = 0
@@ -73,7 +74,7 @@ class Device(Driver):
         return ports_set
 
     def power_off(self, captcha=True):
-        if captcha and not self._power_captcha():
+        if captcha and not self._power_captcha('power off'):
             return
 
         ports_set = 0
@@ -86,7 +87,7 @@ class Device(Driver):
         return ports_set
 
     def power_reboot(self, captcha=True):
-        if captcha and not self._power_captcha():
+        if captcha and not self._power_captcha('reboot'):
             return
 
         ports_rebooted = 0

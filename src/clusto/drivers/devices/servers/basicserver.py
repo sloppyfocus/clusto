@@ -24,6 +24,18 @@ class BasicVirtualServer(BasicServer, IPMixin):
     _clusto_type = "server"
     _driver_name = "basicvirtualserver"
 
+    def power_on(self, *args, **kwargs):
+        raise NotImplementedError('This is a virtual server, you '
+            'should use .start()')
+
+    def power_off(self, *args, **kwargs):
+        raise NotImplementedError('This is a virtual server, you '
+            'should use .shutdown()')
+
+    def power_reboot(self, *args, **kwargs):
+        raise NotImplementedError('This is a virtual server, you '
+            'should use .reboot()')
+
     def create(self, pool, **kwargs):
         raise NotImplemented
 
