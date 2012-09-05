@@ -199,4 +199,35 @@ class PoolTests(testbase.ClustoTestBase):
 
         self.assertEqual(p1.attrs(), [])
 
-        
+
+    def testGetFromPools(self):
+        p1 = clusto.get_or_create('p1', Pool)
+        p2 = clusto.get_or_create('p2', Pool)
+
+        s1 = BasicServer('s1')
+        s2 = BasicServer('s2')
+        s3 = BasicServer('s3')
+        s4 = BasicServer('s4')
+        s5 = BasicServer('s5')
+        s6 = BasicServer('s6')
+
+        p1.insert(s1)
+        p1.insert(s2)
+        p1.insert(s3)
+        p2.insert(s3)
+        p2.insert(s4)
+        p2.insert(s5)
+
+        self.assertEqual(sorted([s1, s2, s3]),
+                         sorted(clusto.get_from_pools(pools=[p1],
+                                                      clusto_types=[BasicServer])))
+        self.assertEqual(sorted([s3, s4, s5]),
+                         sorted(clusto.get_from_pools(pools=[p2],
+                                                      clusto_types=[BasicServer])))
+        self.assertEqual(sorted([s3]),
+                         sorted(clusto.get_from_pools(pools=[p1, p2],
+                                                      clusto_types=[BasicServer])))
+
+        self.assertRaises(LookupError,
+                          clusto.get_from_pools, 'p1', 'non-existent-pool')
+
