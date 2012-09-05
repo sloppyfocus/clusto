@@ -178,8 +178,8 @@ def get_from_pools(pools, clusto_types=(), clusto_drivers=(), search_children=Tr
             raise TypeError("%s is neither a string or a Pool." % str(p))
 
     pls = pool_types
-    if pool_names:
-        pls.extend(get_entities(names=pool_names))
+    for pool_name in pool_names:
+        pls.append(get_by_name(pool_name))
 
     resultsets = []
     for p in pls:
