@@ -151,6 +151,19 @@ class Script(object):
 
         return self.config
 
+def load_plugins(config):
+    plugins = {} #{'clusto': clusto}
+    if config.has_option('clusto', 'plugins'):
+        for plugin in config.get('clusto', 'plugins').split(','):
+            plugins[plugin] = None
+    if 'CLUSTOPLUGINS' in os.environ:
+        for plugin in os.environ['CLUSTOPLUGINS'].split(','):
+            plugins[plugin] = None
+    for plugin in plugins.keys():
+        module = __import__(plugin)
+        plugins[plugin] = module
+    return plugins
+
 def load_config(filename=None, dsn=None, logger=None):
     '''
     Find, parse, and return the configuration data needed by clusto
@@ -194,14 +207,7 @@ def load_config(filename=None, dsn=None, logger=None):
     if not config.has_option('clusto', 'dsn'):
         raise CmdLineError("No database given for clusto data.")
 
-    plugins = []
-    if config.has_option('clusto', 'plugins'):
-        plugins += config.get('clusto', 'plugins').split(',')
-    if 'CLUSTOPLUGINS' in os.environ:
-        plugins += os.environ['CLUSTOPLUGINS'].split(',')
-    for plugin in plugins:
-        logger.debug('Loading plugin %s' % plugin)
-        module = __import__(plugin)
+    logger.debug('Loaded plugins: %s' % (load_plugins(config),))
 
     return config
 

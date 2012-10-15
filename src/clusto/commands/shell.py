@@ -69,14 +69,17 @@ class Shell(script_helper.Script):
             opts.append('-debug')
             config.debug = True
 
+        plugins = script_helper.load_plugins(self.config)
+        plugins.update(globals())
         if IPython.__version__ < '0.11':
             from IPython.Shell import IPShellEmbed
-            ipshell = IPShellEmbed(opts)
+            ipshell = IPShellEmbed(opts, user_ns=plugins)
             if banner:
                 ipshell.set_banner(banner)
         else:
             from IPython.frontend.terminal import embed
-            ipshell = embed.InteractiveShellEmbed(banner1=banner, config=config)
+            ipshell = embed.InteractiveShellEmbed(banner1=banner,
+                config=config, user_ns=plugins)
         ipshell()
 
     def _add_arguments(self, parser):
