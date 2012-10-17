@@ -6,8 +6,8 @@ class BasicServer(IPMixin, PortMixin, Device):
     server
     """
 
-    _clusto_type = "server"
-    _driver_name = "basicserver"
+    _clusto_type = 'server'
+    _driver_name = 'basicserver'
 
     _properties = {'model':None,
                    'manufacturer':None}
@@ -21,32 +21,20 @@ class BasicServer(IPMixin, PortMixin, Device):
 
 class BasicVirtualServer(BasicServer, IPMixin):
 
-    _clusto_type = "server"
-    _driver_name = "basicvirtualserver"
+    _clusto_type = 'server'
+    _driver_name = 'basicvirtualserver'
 
     def power_on(self, *args, **kwargs):
-        raise NotImplementedError('This is a virtual server, you '
-            'should use .start()')
+        raise NotImplementedError()
 
     def power_off(self, *args, **kwargs):
-        raise NotImplementedError('This is a virtual server, you '
-            'should use .shutdown()')
+        raise NotImplementedError()
 
     def power_reboot(self, *args, **kwargs):
-        raise NotImplementedError('This is a virtual server, you '
-            'should use .reboot()')
+        raise NotImplementedError()
 
     def create(self, pool, **kwargs):
-        raise NotImplemented
-
-    def start(self):
-        raise NotImplemented
-
-    def reboot(self):
-        raise NotImplemented
-
-    def shutdown(self):
-        raise NotImplemented
+        raise NotImplementedError()
 
     def destroy(self):
-        raise NotImplemented
+        raise NotImplementedError()
