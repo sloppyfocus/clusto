@@ -40,10 +40,6 @@ class Deallocate(script_helper.Script):
         parser.add_argument('objects', nargs='+',
             help='Server names or IP addresses')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
     def _clean_attrs(self, host):
         '''
         Cleans the attributes from a given host, except for

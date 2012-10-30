@@ -26,10 +26,6 @@ class ListPool(script_helper.Script):
         parser.add_argument('pool', nargs='+', metavar='pool',
             help='Pool(s) to query (1 required, 2 maximum)')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
     def run(self, args):
         if len(args.pool) > 2:
             self.warn('Specified more than 2 pools, using only first 2')

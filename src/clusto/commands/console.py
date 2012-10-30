@@ -29,10 +29,6 @@ class Console(script_helper.Script):
         parser.add_argument('server', nargs=1,
             help='Object to console to (IP or name)')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
     def run(self, args):
         try:
             server = clusto.get(args.server[0])

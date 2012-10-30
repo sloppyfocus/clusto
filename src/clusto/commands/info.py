@@ -123,9 +123,10 @@ class Info(script_helper.Script):
             if values:
                 item_attrs['contents'] = [ _.name for _ in values ]
 #           fetch ip(s)
-            values = obj.get_ips()
-            if values:
-                item_attrs['ip'] = [ _ for _ in values ]
+            if 'get_ips' in dir(obj) and callable(getattr(obj, 'get_ips')):
+                values = obj.get_ips()
+                if values:
+                    item_attrs['ip'] = [ _ for _ in values ]
 #           fetch mac(s)
             values = [ _ for _ in obj.attrs(key='port-nic-eth') if _.subkey.find('mac') != -1 ]
             if values:
@@ -144,10 +145,6 @@ class Info(script_helper.Script):
             help='What format to use to display the info, defaults to "summary"')
         parser.add_argument('items', nargs='*', metavar='item',
             help='List of one or more objects to show info')
-
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
 
 def main():
     info, args = script_helper.init_arguments(Info)

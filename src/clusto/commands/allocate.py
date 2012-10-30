@@ -44,10 +44,6 @@ class Allocate(script_helper.Script):
         parser.add_argument('number', nargs='?', type=int, default=1,
             help='How many machines to allocate, defaults to cheapest machine available')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
     def __sort_servers(self, servers):
         tuples = []
         for server in servers:

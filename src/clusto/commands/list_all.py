@@ -22,10 +22,6 @@ class ListAll(script_helper.Script):
         parser.add_argument('--type', default=None, action='store',
             dest='clusto_type', help='Type of entities to show')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
     def run(self, args):
         if args.clusto_type is None:
             clusto_types = []

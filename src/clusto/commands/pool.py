@@ -132,10 +132,6 @@ class Pool(script_helper.Script):
         parser.add_argument('objects', nargs='*',
             help='Objects to insert/remove (required if action = insert/remove)')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
 
 def main():
     pool, args = script_helper.init_arguments(Pool)

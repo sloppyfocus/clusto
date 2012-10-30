@@ -68,7 +68,10 @@ class Script(object):
         the argparse namespace, otherwise it won't be listed
         '''
 
-        self._setup_subparser(subparser)
+        parser = self._setup_subparser(subparser)
+        if '_add_arguments' in dir(self) and \
+                            callable(getattr(self, '_add_arguments')):
+            self._add_arguments(parser)
 
     def set_logger(self, logger):
         '''
@@ -128,9 +131,6 @@ class Script(object):
             return self.config.get(section, option)
         else:
             return default
-
-    def _add_arguments(self, *args, **kwargs):
-        pass
 
     def init_script(self, args, logger=None):
         '''

@@ -148,10 +148,6 @@ class Attr(script_helper.Script):
         parser.add_argument('obj', nargs=1, metavar='object',
             help='Object to modify/query attributes from')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
 
 def main():
     attr, args = script_helper.init_arguments(Attr)
