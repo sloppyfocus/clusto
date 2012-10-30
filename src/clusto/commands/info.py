@@ -7,7 +7,6 @@ import re
 import sys
 
 import clusto
-from clusto.drivers import IPManager
 from clusto import script_helper
 
 JSON=False
@@ -124,7 +123,7 @@ class Info(script_helper.Script):
             if values:
                 item_attrs['contents'] = [ _.name for _ in values ]
 #           fetch ip(s)
-            values = IPManager.get_ips(obj)
+            values = obj.get_ips()
             if values:
                 item_attrs['ip'] = [ _ for _ in values ]
 #           fetch mac(s)
