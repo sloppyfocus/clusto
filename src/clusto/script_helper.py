@@ -251,11 +251,11 @@ def get_logger(name='', loglevel='INFO'):
     log.setLevel(levels[loglevel])
     return log
 
-def init_arguments(klass):
+def init_arguments(klass, formatter_class=argparse.RawTextHelpFormatter):
     obj = klass()
     parent_parser = setup_base_parser()
     this_parser = argparse.ArgumentParser(parents=[parent_parser],
-        description=obj._get_description(), formatter_class=argparse.RawTextHelpFormatter)
+        description=obj._get_description(), formatter_class=formatter_class)
     obj._add_arguments(this_parser)
     args = this_parser.parse_args()
     log = get_logger(klass.__module__.split('.')[-1], args.loglevel)
