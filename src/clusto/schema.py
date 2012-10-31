@@ -8,15 +8,11 @@ from sqlalchemy import MetaData, Table, Column, DDL, TIMESTAMP, func
 from sqlalchemy import ForeignKey, String, Integer, Text, Index, DateTime
 from sqlalchemy import and_, or_, not_, select, event
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.exc import InvalidRequestError
 
 from sqlalchemy.orm import scoped_session, sessionmaker, mapper, relation
-from sqlalchemy.orm.mapper import Mapper
 
-from sqlalchemy.orm import mapperlib
 import sqlalchemy.sql
 
-import re
 import sys
 import datetime
 import clusto
@@ -91,8 +87,7 @@ SESSION.clusto_description = None
 
 ENTITY_TABLE = Table('entities', METADATA,
                      Column('entity_id', Integer, primary_key=True),
-                     Column('name', String(128, convert_unicode=True,
-                                           assert_unicode=None),
+                     Column('name', String(128, convert_unicode=True),
                             nullable=False, ),
                      Column('type', String(32), nullable=False),
                      Column('driver', String(32), nullable=False),
@@ -110,17 +105,16 @@ ATTR_TABLE = Table('entity_attrs', METADATA,
                    Column('attr_id', Integer, primary_key=True),
                    Column('entity_id', Integer,
                           ForeignKey('entities.entity_id'), nullable=False),
-                   Column('key', String(256, convert_unicode=True,
-                           assert_unicode=None),),
-                   Column('subkey', String(256, convert_unicode=True,
-                           assert_unicode=None), nullable=True,
+                   Column('key', String(256, convert_unicode=True),),
+                   Column('subkey', String(256, convert_unicode=True),
+                          nullable=True,
                           default=None, ),
                    Column('number', Integer, nullable=True, default=None),
                    Column('datatype', String(32), default='string', nullable=False),
 
                    Column('int_value', Integer, default=None),
-                   Column('string_value', Text(convert_unicode=True,
-                           assert_unicode=None), default=None,),
+                   Column('string_value', Text(convert_unicode=True),
+                           default=None,),
                    Column('datetime_value', DateTime, default=None),
                    Column('relation_id', Integer,
                           ForeignKey('entities.entity_id'), default=None),
@@ -150,7 +144,7 @@ event.listen(ATTR_TABLE, 'after_create', create_index.execute_if(dialect='sqlite
 COUNTER_TABLE = Table('counters', METADATA,
                       Column('counter_id', Integer, primary_key=True),
                       Column('entity_id', Integer, ForeignKey('entities.entity_id'), nullable=False),
-                      Column('attr_key', String(256, convert_unicode=True, assert_unicode=None)),
+                      Column('attr_key', String(256, convert_unicode=True)),
                       Column('value', Integer, default=0),
                       mysql_engine='InnoDB'
                       )
