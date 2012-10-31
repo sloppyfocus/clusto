@@ -256,7 +256,8 @@ def init_arguments(klass, formatter_class=argparse.RawTextHelpFormatter):
     parent_parser = setup_base_parser()
     this_parser = argparse.ArgumentParser(parents=[parent_parser],
         description=obj._get_description(), formatter_class=formatter_class)
-    obj._add_arguments(this_parser)
+    if '_add_arguments' in dir(obj) and callable(getattr(obj, '_add_arguments')):
+        obj._add_arguments(this_parser)
     args = this_parser.parse_args()
     log = get_logger(klass.__module__.split('.')[-1], args.loglevel)
     obj.init_script(args=args, logger=log)
