@@ -427,14 +427,8 @@ class Driver(object):
         (filters whole attribute list as opposed to querying the db directly)
         """
 
-        if 'merge_container_attrs' in kwargs:
-            merge_container_attrs = kwargs.pop('merge_container_attrs')
-        else:
-            merge_container_attrs = False
-
-        ignore_memcache = False
-        if 'ignore_memcache' in kwargs:
-            ignore_memcache = kwargs.pop('ignore_memcache')
+        merge_container_attrs = kwargs.pop('merge_container_attrs', False)
+        ignore_memcache = kwargs.pop('ignore_memcache', False)
 
         if clusto.SESSION.memcache and not ignore_memcache:
             logging.debug('Pulling info from memcache when possible for %s' % self.name)
@@ -446,7 +440,7 @@ class Driver(object):
                     k = args[0]
             if k:
 #               This is hackish, need to find another way to know if we should cache things or not
-                if not k.startswith('_') and k != 'ip':
+                if not k.startswith('_'):
                     if 'subkey' in kwargs and kwargs['subkey'] is not None:
                         memcache_key = str('%s.%s.%s' % (self.name, k, kwargs['subkey']))
                     else:
@@ -469,7 +463,9 @@ class Driver(object):
             kwargs['merge_container_attrs'] = merge_container_attrs
             kwargs['ignore_memcache'] = ignore_memcache
             for parent in self.parents():
-                attrs.extend(parent.attrs(*args,  **kwargs))
+                for a in parent.attrs(*args,  **kwargs):
+                    if a not in attrs:
+                        attrs.append(a)
 
         return attrs
 
