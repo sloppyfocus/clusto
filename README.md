@@ -1,3 +1,5 @@
+[![Build Status](https://secure.travis-ci.org/clusto/clusto.png)](http://travis-ci.org/clusto/clusto)
+
 
 What is Clusto?
 ---------------
