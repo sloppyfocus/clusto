@@ -22,10 +22,6 @@ class Rename(script_helper.Script):
         parser.add_argument('newname', nargs=1,
             help='New name for the given entity')
 
-    def add_subparser(self, subparsers):
-        parser = self._setup_subparser(subparsers)
-        self._add_arguments(parser)
-
     def run(self, args):
         try:
             obj = clusto.get_by_name(args.oldname[0])
