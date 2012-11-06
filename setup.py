@@ -37,6 +37,7 @@ setuptools.setup(
             'clusto-list-pool = clusto.commands.list_pool:main',
             'clusto-pool = clusto.commands.pool:main',
             'clusto-reboot = clusto.commands.reboot:main',
+            'clusto-rename = clusto.commands.rename:main',
             'clusto-initdb = clusto.commands.initdb:main',
             'clusto-shell = clusto.commands.shell:main',
             'clusto-list-all = clusto.commands.list_all:main',
