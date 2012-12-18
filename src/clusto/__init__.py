@@ -262,6 +262,13 @@ def get_by_serial(serial):
         'value': serial,
     }])
 
+def get_by_ip(ip):
+    return get_entities(attrs=[{
+        'key': 'ip',
+        'subkey': 'ipstring',
+        'value': ip,
+    }])
+
 def get(term):
     if not isinstance(term, basestring):
         raise ValueError('get(term) must be a string')
