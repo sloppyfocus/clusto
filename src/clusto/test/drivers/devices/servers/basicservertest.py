@@ -129,3 +129,9 @@ class BasicServerTest(testbase.ClustoTestBase):
 
         self.assertEqual(IPManager.get_devices('10.0.1.100'), [s1])
         
+    def testGettingByIP(self):
+        s1 = clusto.get_by_name('bs1')
+        ipm = IPManager('ipman', netmask='255.255.0.0', baseip='10.0.0.1')
+        s1.add_ip(ipman=ipm)
+        self.assertTrue(clusto.get_by_ip('10.0.0.1'), [s1])
+
