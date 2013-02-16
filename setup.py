@@ -20,11 +20,11 @@ setuptools.setup(
     author_email = "ron@parktree.net",
     description = "Cluster management and inventory system",
     install_requires = [
+        'distribute',
         'argparse',
         'sqlalchemy>=0.7',
         'IPython>=0.10',
         'IPy',
-        'WebOb',
     ],
     entry_points = {
         'console_scripts': [
