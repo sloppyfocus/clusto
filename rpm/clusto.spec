@@ -71,7 +71,7 @@ cp -R contrib/* %{buildroot}%{_libexecdir}/%{name}/
 
 %files
 %defattr(-,root,root,-)
-%doc README LICENSE doc/.build/html
+%doc README* LICENSE doc/.build/html
 %config(noreplace) %{_sysconfdir}/%{name}
 %{py_sitedir}/%{name}*
 %attr(0755, root, root) %{_libexecdir}/%{name}/*
