@@ -62,7 +62,7 @@ rm -f .build/html/.buildinfo
 mkdir -p %{buildroot}%{_sysconfdir}/%{name}
 mkdir -p %{buildroot}%{_libexecdir}/%{name}
 cp conf/* %{buildroot}%{_sysconfdir}/%{name}/
-cp contrib/* %{buildroot}%{_libexecdir}/%{name}/
+cp -R contrib/* %{buildroot}%{_libexecdir}/%{name}/
 
 
 %clean
