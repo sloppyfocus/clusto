@@ -75,7 +75,6 @@ cp -R contrib/* %{buildroot}%{_libexecdir}/%{name}/
 %config(noreplace) %{_sysconfdir}/%{name}
 %{py_sitedir}/%{name}*
 %attr(0755, root, root) %{_libexecdir}/%{name}/*
-%attr(0755, root, root) %{_datadir}/%{name}/*
 %attr(0755, root, root) %{_bindir}/*
 
 
