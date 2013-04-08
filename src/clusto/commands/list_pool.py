@@ -2,6 +2,7 @@
 # -*- mode: python; sh-basic-offset: 4; indent-tabs-mode: nil; coding: utf-8 -*-
 # vim: tabstop=4 softtabstop=4 expandtab shiftwidth=4 fileencoding=utf-8
 
+from IPy import IP
 import argparse
 import sys
 
@@ -23,28 +24,38 @@ class ListPool(script_helper.Script):
             help='Print names instead of ip addresses (defaults to False)')
         parser.add_argument('--recursive', default=False, action='store_true',
             help='Search resursively on both pools (defaults to False)')
+        parser.add_argument('--type', default=None,
+            help='Restrict results to the given type')
         parser.add_argument('pool', nargs='+', metavar='pool',
-            help='Pool(s) to query (1 required, 2 maximum)')
+            help='Pool(s) to query')
 
     def run(self, args):
-        if len(args.pool) > 2:
-            self.warn('Specified more than 2 pools, using only first 2')
-        self.debug('Querying for pools %s' % args.pool)
-        self.debug('Recursive search = %s' % args.recursive)
-        serverset = clusto.get_from_pools(args.pool[:2],
-            clusto_types=[drivers.servers.BasicServer],
-            search_children=args.recursive)
+        serverset = None
+        for pool in args.pool:
+            pool = clusto.get_by_name(pool)
+            contents = pool.contents(search_children=args.recursive)
+            if args.type:
+                contents = [x for x in contents if x.type == args.type]
+            contents = set(contents)
+
+            if serverset is None:
+                serverset = contents
+            else:
+                serverset = serverset.intersection(pool)
+
         for server in serverset:
             if args.names:
                 print server.name
             else:
                 try:
                     ip = server.get_ips()
+                    ip.sort(key=lambda x: IP(x))
                 except Exception, e:
                     self.debug(e)
                     ip = None
+
                 if ip:
-                    print ip[0]
+                    print ' '.join(ip)
                 else:
                     print server.name
 
