@@ -72,3 +72,13 @@ Outputs a tree-like listing of objects contained within other objects::
     name: s0001 system: [u'P1238110062\n', 8]   
     name: s0002 system: [u'P1238110064\n', 8]   
     name: s0004 system: [u'P1238110066\n', 8]  
+
+Useful aliases
+~~~~~~~~~~~~~~
+
+I've found the following shorthand aliases for clusto commands to be extremely handy::
+
+ $ alias cinfo="clusto info"
+ $ alias clp="clusto list-pool"
+
+
