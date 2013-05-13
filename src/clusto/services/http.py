@@ -9,12 +9,17 @@ from traceback import format_exc
 from urllib import unquote_plus
 import new
 import re
+import os
 
 from clusto.drivers import Driver, IPManager
+import clusto.script_helper
 import clusto
 
 from clusto.services.config import conf, get_logger
 log = get_logger('clusto.http', 'INFO')
+
+conf = clusto.script_helper.load_config(os.environ.get('CLUSTOCONFIG', '/etc/clusto/clusto.conf'))
+clusto.connect(conf)
 
 
 def unclusto(obj):
