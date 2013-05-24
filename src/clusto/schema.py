@@ -268,7 +268,8 @@ class Attribute(ProtectedObj):
         if not isinstance(other, Attribute):
             return False
 
-        return ((self.key == other.key) and (self.value == other.value))
+        return ((self.key == other.key) and (self.subkey == other.subkey) and
+                (self.number == other.number) and (self.value == other.value))
 
     def __repr__(self):
 
