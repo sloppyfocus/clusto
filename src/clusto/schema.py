@@ -269,7 +269,7 @@ class Attribute(ProtectedObj):
             return False
 
         return ((self.key == other.key) and (self.subkey == other.subkey) and
-                (self.number == other.number) and (self.value == other.value))
+                (self.value == other.value))
 
     def __repr__(self):
 
