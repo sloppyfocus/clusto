@@ -1,3 +1,10 @@
+clusto (0.5.39) precise; urgency=low
+
+  * Change README to README.md
+  * Add license information to setup.py
+
+ -- Jeremy Grosser <jeremy@synack.me>  Fri, 19 Jul 2013 22:50:13 +0000
+
 clusto (0.5.38) unstable; urgency=low
 
   * Allow newer SQLAlchemy and IPython packages as deps

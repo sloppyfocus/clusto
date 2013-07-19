@@ -18,6 +18,7 @@ setuptools.setup(
     packages = setuptools.find_packages('src'),
     author = "Ron Gorodetzky",
     author_email = "ron@parktree.net",
+    license = 'BSD',
     description = "Cluster management and inventory system",
     install_requires = [
         'distribute',
