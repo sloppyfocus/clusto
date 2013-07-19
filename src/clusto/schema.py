@@ -48,11 +48,10 @@ class ClustoEmptyCommit(Exception):
 class ClustoSession(sqlalchemy.orm.interfaces.SessionExtension):
 
     def after_begin(self, session, transaction, connection):
-
-        sql = CLUSTO_VERSIONING.insert().values(user=SESSION.clusto_user,
-                                                description=SESSION.clusto_description)
-
-        session.execute(sql)
+        if SESSION.clusto_versioning_enabled:
+            sql = CLUSTO_VERSIONING.insert().values(user=SESSION.clusto_user,
+                                                    description=SESSION.clusto_description)
+            session.execute(sql)
 
         SESSION.clusto_description = None
         SESSION.flushed = set()
@@ -81,6 +80,7 @@ def latest_version():
 def working_version():
     return select([func.coalesce(func.max(CLUSTO_VERSIONING.c.version),1)])
 
+SESSION.clusto_versioning_enabled = True
 SESSION.clusto_version = None
 SESSION.clusto_user = None
 SESSION.clusto_description = None
