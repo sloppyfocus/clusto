@@ -1,4 +1,4 @@
-clusto (0.5.39) unstable; urgency=low
+clusto (0.5.39) precise; urgency=low
 
   * Change README to README.md
   * Add license information to setup.py
