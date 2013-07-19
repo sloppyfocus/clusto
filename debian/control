@@ -2,15 +2,14 @@ Source: clusto
 Section: net
 Priority: extra
 Maintainer: Jeremy Grosser <jeremy@synack.me>
-Build-Depends: cdbs, debhelper (>= 5), python-setuptools, python-support (>= 0.3), python-all
-Standards-Version: 3.9.1
+Build-Depends: debhelper (>= 8), python-all (>= 2.6.6-3~), python-setuptools
+Standards-Version: 3.9.3
 
 Package: clusto
 Architecture: all
 Depends: ${misc:Depends}, ${python:Depends}, ipython, python-sqlalchemy, python-ipy, python-webob, python-argparse, python-pkg-resources
 Suggests: python-psycopg2, python-mysqldb, python-simplejson, python-sqlite, python-memcache
-Provides: ${python:Provides}
-Description: A set of abstractions for server infrastructure
- With Clusto, you can represent your infrastructure using a number of
- pre-defined types (racks, servers, switches, etc) or you can define your
- own types in a simple Python framework.
+Description: A truth database for managing servers and datacenters
+ Clusto can represent your infrastructure using a number of pre-defined types
+ (racks, servers, switches, etc) or you can define your own types in a simple
+ Python framework.
