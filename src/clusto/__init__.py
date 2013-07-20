@@ -35,6 +35,11 @@ def connect(config, echo=False):
 
     SESSION.clusto_version = None
 
+    if config.has_option('clusto', 'versioning'):
+        SESSION.clusto_versioning_enabled = config.getboolean('clusto', 'versioning')
+    else:
+        SESSION.clusto_versioning_enabled = True
+
     try:
         memcache_servers = config.get('clusto', 'memcached').split(',')
 #       Memcache should only be imported if we're actually using it, yes?
