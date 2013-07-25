@@ -1,3 +1,10 @@
+clusto (0.6.0) precise; urgency=low
+
+  * Tagging new major release
+  * Versioning is now optional
+
+ -- Jeremy Grosser <jeremy@synack.me>  Thu, 25 Jul 2013 13:46:52 -0700
+
 clusto (0.5.39) precise; urgency=low
 
   * Change README to README.md
