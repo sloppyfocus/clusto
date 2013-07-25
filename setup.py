@@ -14,7 +14,7 @@ srcdir = os.path.join(os.path.dirname(sys.argv[0]), 'src')
 
 setuptools.setup(
     name = "clusto",
-    version = "0.7.1",
+    version = "0.7.2",
     packages = setuptools.find_packages('src'),
     author = "Ron Gorodetzky",
     author_email = "ron@parktree.net",
