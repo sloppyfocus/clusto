@@ -1,3 +1,9 @@
+clusto (0.7.1) precise; urgency=low
+
+  * Tagging to make Python versioning consistent
+
+ -- Jeremy Grosser <jeremy@synack.me>  Thu, 25 Jul 2013 13:53:37 -0700
+
 clusto (0.6.0) precise; urgency=low
 
   * Tagging new major release
