@@ -88,7 +88,7 @@ def clear():
 def get_driver_name(name):
     "Return driver name given a name, Driver class, or Driver/Entity instance."
 
-    if isinstance(name, str):
+    if isinstance(name, basestring):
         if name in DRIVERLIST:
             return name
         else:
@@ -103,7 +103,7 @@ def get_driver_name(name):
 
 def get_type_name(name):
 
-    if isinstance(name, str):
+    if isinstance(name, basestring):
         if name in TYPELIST:
             return name
         else:
