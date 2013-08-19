@@ -1,8 +1,9 @@
-#!/usr/bin/env python
-from clusto import scripthelpers
+#!/usr/bin/python
+import clusto.script_helper
+import clusto
 from clusto.services import dhcp
 
 if __name__ == '__main__':
-    scripthelpers.init_script()
+    clusto.connect(clusto.script_helper.load_config('/etc/clusto/clusto.conf'))
     server = dhcp.ClustoDHCPServer()
     server.run()
