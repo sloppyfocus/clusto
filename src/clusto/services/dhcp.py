@@ -1,3 +1,4 @@
+from collections import defaultdict
 from traceback import format_exc
 from struct import unpack
 from errno import EINTR
@@ -180,22 +181,21 @@ class ClustoDHCPServer(DHCPServer):
             log.info('DHCP not enabled for %s' % server.name)
             return
 
-        ip = server.attrs(key='ip', subkey='ipstring')
-        if not ip:
-            log.info('No IP assigned for %s' % server.name)
-            return
-        else:
-            ip = ip[0].value
+        ips = defaultdict(dict)
+        for attr in server.attrs(key='ip'):
+            ips[attr.number][attr.subkey] = attr.value
 
-        ipman = server.attrs(key='ip', subkey='manager')
-        if not ipman:
-            log.info('Could not find the ip manager for %s' % server.name)
+        for num, ip in ips.items():
+            if IP(ip['ipstring']).iptype() != 'PRIVATE':
+                del ips[num]
+        if not ips:
+            log.info('No private IP assigned for %s' % server.name)
             return
-        else:
-            ipman = ipman[0].value
-        ipman = dict([(x.key, x.value) for x in ipman.attrs(subkey='property')])
+        
+        ip = ips.values().pop()
+        ipman = dict([(x.key, x.value) for x in ip['manager'].attrs(subkey='property')])
         #ipman = dict([(x['key'], x['value']) for x in clusto.get_ip_manager(ip).attrs() if x['subkey'] == 'property'])
-        ipy = IP('%s/%s' % (ip, ipman['netmask']), make_net=True)
+        ipy = IP('%s/%s' % (ip['ipstring'], ipman['netmask']), make_net=True)
 
         options = {
             'server_id': self.server_id,
@@ -212,7 +212,7 @@ class ClustoDHCPServer(DHCPServer):
         for attr in server.attrs(key='dhcp', merge_container_attrs=True):
             options[attr.subkey] = attr.value
 
-        response = DHCPResponse(type='offer', offerip=ip, options=options, request=request)
+        response = DHCPResponse(type='offer', offerip=ip['ipstring'], options=options, request=request)
         self.offers[request.packet.chaddr] = response
         self.send('255.255.255.255', response.build())
 
