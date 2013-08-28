@@ -13,6 +13,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker, mapper, relation
 
 import sqlalchemy.sql
 
+import logging
 import sys
 import datetime
 import clusto
@@ -41,6 +42,9 @@ CLUSTO_VERSIONING = Table('clustoversioning', METADATA,
                           mysql_engine='InnoDB'
 
                           )
+
+logging.basicConfig(format='%(asctime)s %(name)s %(levelname)s %(message)s')
+audit_log = logging.getLogger('clusto.audit')
 
 class ClustoEmptyCommit(Exception):
     pass
@@ -164,6 +168,8 @@ class Counter(object):
 
         self.value = start
 
+        audit_log.info('create counter entity=%s attr_key=%s value=%s', self.entity.name, self.attr_key, self.value)
+
         SESSION.add(self)
         SESSION.flush()
 
@@ -171,6 +177,7 @@ class Counter(object):
 
         self.value = Counter.value + 1
         SESSION.flush()
+        audit_log.info('increment counter entity=%s attr_key=%s value=%s', self.entity.name, self.attr_key, self.value)
         return self.value
 
     @classmethod
@@ -250,6 +257,8 @@ class Attribute(ProtectedObj):
             self.number = number
 
 
+        audit_log.info('create attribute entity=%s key=%s subkey=%s value=%s number=%s datatype=%s',
+                self.entity.name, self.key, self.subkey, self.value, self.number, self.datatype)
         SESSION.add(self)
         SESSION.flush()
 
@@ -369,12 +378,16 @@ class Attribute(ProtectedObj):
         
         setattr(self, value_type, value)
 
+        audit_log.info('set attribute entity=%s key=%s subkey=%s value=%s number=%s datatype=%s',
+                self.entity.name, self.key, self.subkey, self.value, self.number, self.datatype)
+
     value = property(_get_value, _set_value)
 
     @ProtectedObj.writer
     def delete(self):
         ### TODO this seems like a hack
-
+        audit_log.info('delete attribute entity=%s key=%s subkey=%s value=%s number=%s datatype=%s',
+                self.entity.name, self.key, self.subkey, self.value, self.number, self.datatype)
         self.deleted_at_version = working_version()
 
     @classmethod
@@ -462,6 +475,9 @@ class Entity(ProtectedObj):
         self.type = clustotype
 
         self.version = working_version()
+
+        audit_log.info('create entity %s driver=%s type=%s', self.name, self.driver, self.type)
+
         SESSION.add(self)
         SESSION.flush()
 
@@ -529,6 +545,7 @@ class Entity(ProtectedObj):
                 i.delete()
 
             clusto.commit()
+            audit_log.info('delete entity %s', self.name)
         except Exception, x:
             clusto.rollback_transaction()
             raise x

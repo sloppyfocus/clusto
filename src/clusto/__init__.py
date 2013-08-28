@@ -9,6 +9,7 @@ from sqlalchemy.pool import SingletonThreadPool
 from clusto import drivers
 
 import threading
+import logging.config
 import logging
 import time
 import re
@@ -39,6 +40,16 @@ def connect(config, echo=False):
         SESSION.clusto_versioning_enabled = config.getboolean('clusto', 'versioning')
     else:
         SESSION.clusto_versioning_enabled = True
+
+    # Set the log level from config, default is WARNING
+    if config.has_option('clusto', 'loglevel'):
+        rootlog = logging.getLogger()
+        level = logging.getLevelName(config.get('clusto', 'loglevel'))
+        rootlog.setLevel(level)
+
+    # Use a full-fledged logging.ini
+    if config.has_option('clusto', 'logconfig'):
+        logging.config.fileConfig(config.get('clusto', 'logconfig'))
 
     try:
         memcache_servers = config.get('clusto', 'memcached').split(',')
