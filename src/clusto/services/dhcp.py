@@ -1,9 +1,7 @@
 from traceback import format_exc
 from struct import unpack
 from errno import EINTR
-from time import time
 import socket
-import signal
 
 from clusto.services.config import conf, get_logger
 log = get_logger('clusto.dhcp', 'INFO')
@@ -41,11 +39,14 @@ class DHCPRequest(object):
         hwaddr = ':'.join(['%02x' % ord(x) for x in self.packet.chaddr[:6]])
 
         mac = None
-        vendor = None
         options = dict([x for x in options if isinstance(x, tuple)])
         if 'client_id' in options:
-            mac = unpack('>6s', options['client_id'][1:])[0]
-            options['client_id'] = ':'.join(['%02x' % ord(x) for x in mac]).lower()
+            # This format is completely nonstandard
+            try:
+                mac = unpack('>6s', options['client_id'][1:])[0]
+                options['client_id'] = ':'.join(['%02x' % ord(x) for x in mac]).lower()
+            except:
+                log.warning('Unable to parse client_id from %s, ignoring', hwaddr)
 
         self.type = DHCPTypes[options['message-type']]
         self.hwaddr = hwaddr
