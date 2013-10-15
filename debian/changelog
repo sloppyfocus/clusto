@@ -1,3 +1,9 @@
+clusto (0.7.4) unstable; urgency=low
+
+  * Add audit logging support
+
+ -- Jeremy Grosser <jeremy@synack.me>  Mon, 14 Oct 2013 21:51:28 -0700
+
 clusto (0.7.3) precise; urgency=low
 
   * Add clusto-dhcpd to install scripts

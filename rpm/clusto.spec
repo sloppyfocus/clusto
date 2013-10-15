@@ -6,7 +6,7 @@
 %{!?_with_psycopg2: %{!?_without_psycopg2: %define _without_psycopg2 --without-psycopg2}}
 
 Name:		clusto
-Version:	0.7.3
+Version:	0.7.4
 Release:	4%{?dist}
 Summary:	Tools and libraries for organizing and managing infrastructure
 
