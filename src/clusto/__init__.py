@@ -163,7 +163,7 @@ def get_entities(names=(), clusto_types=(), clusto_drivers=(), attrs=()):
 
     if attrs:
         for k,v in attrs[0].items():
-            if not isinstance(v,str):
+            if not isinstance(v, basestring):
                 continue
             attrs[0][k] = u'%s' % v
         query = query.filter(Attribute.entity_id==Entity.entity_id)
