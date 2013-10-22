@@ -11,22 +11,20 @@ import sys
 
 
 srcdir = os.path.join(os.path.dirname(sys.argv[0]), 'src')
+reqs = os.path.join(os.path.dirname(sys.argv[0]), 'requirements.txt')
 
 setuptools.setup(
     name = "clusto",
-    version = "0.7.4",
+    version = "0.7.5",
     packages = setuptools.find_packages('src'),
     author = "Ron Gorodetzky",
     author_email = "ron@parktree.net",
     license = 'BSD',
     description = "Cluster management and inventory system",
-    install_requires = [
-        'distribute',
-        'argparse',
-        'sqlalchemy>=0.7',
-        'IPython>=0.10',
-        'IPy',
-        'WebOb'
+    install_requires=[
+        _.strip()
+        for _ in open(reqs).readlines()
+        if _ and not _.startswith('#')
     ],
     entry_points = {
         'console_scripts': [
