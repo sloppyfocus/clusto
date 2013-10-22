@@ -26,6 +26,7 @@ setuptools.setup(
         'sqlalchemy>=0.7',
         'IPython>=0.10',
         'IPy',
+        'WebOb'
     ],
     entry_points = {
         'console_scripts': [
