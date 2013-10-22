@@ -5,7 +5,6 @@
 # Shell command
 # Copyright 2009, Ron Gorodetzky <ron@fflick.com>
 
-import argparse
 import sys
 
 import IPython
@@ -76,8 +75,12 @@ class Shell(script_helper.Script):
             ipshell = IPShellEmbed(opts, user_ns=plugins)
             if banner:
                 ipshell.set_banner(banner)
-        else:
+        elif IPython.__version__ < '1.0':
             from IPython.frontend.terminal import embed
+            ipshell = embed.InteractiveShellEmbed(banner1=banner,
+                config=config, user_ns=plugins)
+        else:
+            from IPython.terminal import embed
             ipshell = embed.InteractiveShellEmbed(banner1=banner,
                 config=config, user_ns=plugins)
         ipshell()
