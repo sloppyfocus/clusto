@@ -47,9 +47,18 @@ def connect(config, echo=False):
         level = logging.getLevelName(config.get('clusto', 'loglevel'))
         rootlog.setLevel(level)
 
-    # Use a full-fledged logging.ini
-    if config.has_option('clusto', 'logconfig'):
-        logging.config.fileConfig(config.get('clusto', 'logconfig'))
+    # Setup audit logging to a file
+    if config.has_option('clusto', 'auditlog'):
+        auditlog = logging.getLogger('clusto.audit')
+        auditlog.propagate = False
+        auditlog.setLevel(logging.INFO)
+        logfile = config.get('clusto', 'auditlog')
+        handler = logging.handlers.WatchedFileHandler(logfile)
+        handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(name)s %(levelname)s %(message)s',
+            '%Y-%m-%d %H:%M:%S'
+        ))
+        auditlog.addHandler(handler)
 
     try:
         memcache_servers = config.get('clusto', 'memcached').split(',')
