@@ -120,7 +120,9 @@ class Attr(script_helper.Script):
         opts = {}
         kwargs = dict(args.__dict__.items())
         self.format = args.format
-        for k in ['key', 'subkey', 'value', 'merge_container_attrs']:
+        for k in ['key', 'subkey', 'value', 'number', 'merge_container_attrs']:
+            if k == 'number' and kwargs[k] is not None:
+                kwargs[k] = int(kwargs[k])
             if kwargs[k] != None:
                 opts[k] = kwargs[k]
         return (getattr(self, 'run_%s' % args.action[0])(opts))
