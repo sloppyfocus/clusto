@@ -142,6 +142,8 @@ class Attr(script_helper.Script):
             default=None)
         parser.add_argument('-v', '--value', help='Attribute value to filter on',
             default=None)
+        parser.add_argument('-n', '--number', help='Attribute number to filter on',
+            default=None)
         parser.add_argument('-m', '--merge', default=False, action='store_true',
             dest='merge_container_attrs',
             help='Merge container attributes recursively (defaults to False)')
