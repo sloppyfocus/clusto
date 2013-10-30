@@ -39,7 +39,7 @@ def connect(config, echo=False):
     if config.has_option('clusto', 'versioning'):
         SESSION.clusto_versioning_enabled = config.getboolean('clusto', 'versioning')
     else:
-        SESSION.clusto_versioning_enabled = True
+        SESSION.clusto_versioning_enabled = False
 
     # Set the log level from config, default is WARNING
     if config.has_option('clusto', 'loglevel'):
