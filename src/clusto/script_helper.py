@@ -124,11 +124,11 @@ class Script(object):
         '''
         raise NotImplementedError()
 
-    def get_conf(self, path, default=None):
+    def get_conf(self, *args, **kwargs):
         '''
         Returns the config value
         '''
-        return get_conf(self.config, path, default)
+        return get_conf(self.config, *args, **kwargs)
 
     def init_script(self, args, logger=None):
         '''
