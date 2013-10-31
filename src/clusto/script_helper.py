@@ -9,9 +9,9 @@ import argparse
 import ConfigParser
 import glob
 try:
-    import json
-except ImportError:
     import simplejson as json
+except ImportError:
+    import json
 import logging
 import os
 import sys
