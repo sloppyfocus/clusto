@@ -388,7 +388,11 @@ class Attribute(ProtectedObj):
         ### TODO this seems like a hack
         audit_log.info('delete attribute entity=%s key=%s subkey=%s value=%s number=%s datatype=%s',
                 self.entity.name, self.key, self.subkey, self.value, self.number, self.datatype)
-        self.deleted_at_version = working_version()
+        if SESSION.clusto_versioning_enabled:
+            self.deleted_at_version = working_version()
+        else:
+            SESSION.delete(self)
+            SESSION.flush()
 
     @classmethod
     def _version_args(cls):
@@ -536,13 +540,17 @@ class Entity(ProtectedObj):
 
         clusto.begin_transaction()
         try:
-            self.deleted_at_version = working_version()
-
             for i in self.references:
                 i.delete()
 
             for i in self.attrs:
                 i.delete()
+
+            if SESSION.clusto_versioning_enabled:
+                self.deleted_at_version = working_version()
+            else:
+                SESSION.delete(self)
+                SESSION.flush()
 
             clusto.commit()
             audit_log.info('delete entity %s', self.name)
