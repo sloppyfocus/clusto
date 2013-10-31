@@ -11,4 +11,3 @@ notifications:
       - "chat.freenode.net#clusto"
     on_success: change
     on_failure: always
-    skip_join: true
