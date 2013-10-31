@@ -149,26 +149,26 @@ class Script(object):
 
         return self.config
 
-def get_conf(config, path, default=None, type=None):
+def get_conf(config, path, default=None, datatype=None):
     (section, option) = path.split('.')
     if config.has_option(section, option):
-        if type == bool:
+        if datatype == bool:
             return config.getboolean(section, option)
-        elif type == int:
+        elif datatype == int:
             return config.getint(section, option)
-        elif type == float:
+        elif datatype == float:
             return config.getfloat(section, option)
-        elif type == list:
+        elif datatype == list:
             values = config.get(section, option)
             return [_.strip() for _ in values.split(',')]
-        elif type == dict:
+        elif datatype == dict:
             values = config.get(section, option)
             result = {}
             for value in values.split(','):
                 k,v = value.split(':')
                 result[k.strip()] = v.strip()
             return result
-        elif type == 'json':
+        elif datatype == 'json':
             data = config.get(section, option)
             jdata = json.loads(data)
             return jdata
