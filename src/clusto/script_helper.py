@@ -160,13 +160,13 @@ def get_conf(config, path, default=None, type=None):
             return config.getfloat(section, option)
         elif type == list:
             values = config.get(section, option)
-            return values.split(',')
+            return [_.strip() for _ in values.split(',')]
         elif type == dict:
             values = config.get(section, option)
             result = {}
             for value in values.split(','):
                 k,v = value.split(':')
-                result[k] = v
+                result[k.strip()] = v.strip()
             return result
         elif type == 'json':
             data = config.get(section, option)
