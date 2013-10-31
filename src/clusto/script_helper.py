@@ -8,10 +8,13 @@
 import argparse
 import ConfigParser
 import glob
+try:
+    import simplejson as json
+except ImportError:
+    import json
 import logging
 import os
 import sys
-
 import clusto
 
 
@@ -121,16 +124,11 @@ class Script(object):
         '''
         raise NotImplementedError()
 
-    def get_conf(self, path, default=None):
+    def get_conf(self, *args, **kwargs):
         '''
         Returns the config value
         '''
-
-        (section, option) = path.split('.')
-        if self.config.has_option(section, option):
-            return self.config.get(section, option)
-        else:
-            return default
+        return get_conf(self.config, *args, **kwargs)
 
     def init_script(self, args, logger=None):
         '''
@@ -150,6 +148,34 @@ class Script(object):
         clusto.connect(self.config)
 
         return self.config
+
+def get_conf(config, path, default=None, datatype=None):
+    (section, option) = path.split('.')
+    if config.has_option(section, option):
+        if datatype == bool:
+            return config.getboolean(section, option)
+        elif datatype == int:
+            return config.getint(section, option)
+        elif datatype == float:
+            return config.getfloat(section, option)
+        elif datatype == list:
+            values = config.get(section, option)
+            return [_.strip() for _ in values.split(',')]
+        elif datatype == dict:
+            values = config.get(section, option)
+            result = {}
+            for value in values.split(','):
+                k,v = value.split(':')
+                result[k.strip()] = v.strip()
+            return result
+        elif datatype == 'json':
+            data = config.get(section, option)
+            jdata = json.loads(data)
+            return jdata
+        else:
+            return config.get(section, option)
+    else:
+        return default
 
 def load_plugins(config):
     plugins = {} #{'clusto': clusto}
@@ -269,7 +295,7 @@ def main():
 
     parser = setup_base_parser(add_help=True)
     subparsers = parser.add_subparsers(title='Available clusto commands', dest='subparser_name')
-    help_subparser = subparsers.add_parser('help', help='Print clusto help')
+    subparsers.add_parser('help', help='Print clusto help')
     for dirpath, dirname, filenames in os.walk(commands.__path__[0]):
         for fn in filenames:
             if not fn.endswith('pyc') and not fn.startswith('__'):
