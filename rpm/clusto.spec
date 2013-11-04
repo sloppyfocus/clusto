@@ -6,7 +6,7 @@
 %{!?_with_psycopg2: %{!?_without_psycopg2: %define _without_psycopg2 --without-psycopg2}}
 
 Name:		clusto
-Version:	0.7.5
+Version:	0.7.6
 Release:	0%{?dist}
 Summary:	Tools and libraries for organizing and managing infrastructure
 
@@ -78,6 +78,21 @@ cp -R web/static/* %{buildroot}%{_datadir}/%{name}/web/
 
 
 %changelog
+* Mon Nov 4 2013 Mike Newton <mike@delusion.org> - 0.7.6
+- Merge pull request #35 from thekad/master (Jeremy Grosser)
+- Adding more options to get_conf (Jorge Gallegos)
+- Updated travis notifications (Jorge Gallegos)
+- Merge pull request #34 from motivator/delete-noversion (Jorge Gallegos)
+- Merge pull request #33 from synack/ipmanagers (Jorge Gallegos)
+- delete from database when versioning is off (Mike Newton)
+- Add IPManager.get_ip_managers classmethod (Jeremy Grosser)
+- Enable versioning during unit tests (Jeremy Grosser)
+- Versioning disabled by default (Jeremy Grosser)
+- Add -n --number option to clusto-attr (Jeremy Grosser)
+- Remove logging fileConfig and explicitly configure audit logging so that we don't break tools that
+* Tue Oct 22 2013 Jorge A Gallegos <kad@blegh.net> - 0.7.5-0
+- It'd been quite a while since spec file was loved (Jorge Gallegos)
+- Merge pull request #32 from thekad/master (Jorge Gallegos)
 * Tue Oct 22 2013 Jorge A Gallegos <kad@blegh.net> - 0.7.5-0
 - Bumping version slightly (Jorge Gallegos)
 - Got rid of a deprecation warning in clusto-shell (Jorge Gallegos)
