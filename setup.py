@@ -15,7 +15,7 @@ reqs = os.path.join(os.path.dirname(sys.argv[0]), 'requirements.txt')
 
 setuptools.setup(
     name = "clusto",
-    version = "0.7.5.1",
+    version = "0.7.6",
     packages = setuptools.find_packages('src'),
     author = "Ron Gorodetzky",
     author_email = "ron@parktree.net",
