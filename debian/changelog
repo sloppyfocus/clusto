@@ -1,3 +1,27 @@
+clusto (0.7.6) unstable; urgency=low
+
+  * Adding more options to get_conf (Jorge Gallegos)
+  * Updated travis notifications (Jorge Gallegos)
+  * Delete from database when versioning is off (Mike Newton)
+  * Add IPManager.get_ip_managers classmethod (Jeremy Grosser)
+  * Versionsing disabled by default (Jeremy Grosser)
+  * Add -n --number option to clusto-attr (Jeremy Grosser)
+  * Remove logging fileConfig and explicitly configure audit logging so that
+    we don't break tools that
+
+ -- Mike Newton <mike@delusion.org>    Mon, 04 Nov 2013 12:44:00 -0700
+
+clusto (0.7.5-1) unstable; urgency=low
+
+  * It'd been quite a while since spec file was loved
+  * Got rid of a deprecation warning in clusto-shell
+  * Pull the requirements from the main setup.py file
+  * re-add WebOb to setup.py requires
+  * ignore client_ids that don't parse according to this one scheme
+  * use basestring instead of str in a few places
+
+ -- Jorge A Gallegos <kad@blegh.net>   Tue, 22 Oct 2013 16:58:12 -0700
+
 clusto (0.7.4) unstable; urgency=low
 
   * Add audit logging support
