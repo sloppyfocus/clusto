@@ -204,7 +204,7 @@ def get_from_pools(pools, clusto_types=(), clusto_drivers=(), search_children=Tr
 
     pls = pool_types
     for pool_name in pool_names:
-        pls.append(get_by_name(pool_name))
+        pls.append(get_by_name(pool_name, assert_driver=drivers.Pool))
 
     resultsets = []
     for p in pls:
