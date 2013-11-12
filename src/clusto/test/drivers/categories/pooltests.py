@@ -231,3 +231,9 @@ class PoolTests(testbase.ClustoTestBase):
         self.assertRaises(LookupError,
                           clusto.get_from_pools, 'p1', 'non-existent-pool')
 
+        # mixing types in get_from_pools should raise a TypeError now
+        self.assertRaises(TypeError,
+                          clusto.get_from_pools, ['p1', 's1'], 'dont-mix-types')
+
+        # lax joining in get_from_entities should return an empty list in this case because s1 has no children
+        self.assertEqual([], sorted(clusto.get_from_entities(['p1', 's1'])))
