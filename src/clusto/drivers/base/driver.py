@@ -641,7 +641,7 @@ class Driver(object):
                 logging.debug('Expiring %s' % mk)
                 clusto.SESSION.memcache.delete(mk)
         else:
-            logging.info('Not using memcache, not expiring anything.')
+            logging.debug('Not using memcache, not expiring anything.')
 
     def has_attr(self, *args, **kwargs):
         """return True if this list has an attribute with the given key"""
