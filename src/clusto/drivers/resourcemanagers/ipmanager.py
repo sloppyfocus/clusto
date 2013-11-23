@@ -14,7 +14,6 @@ class IPManager(ResourceManager):
 
 
     _driver_name="ipmanager"
-    _clusto_type="ipmanager"
 
     _properties = {'gateway': None,
                    'netmask': '255.255.255.255',
@@ -129,7 +128,7 @@ class IPManager(ResourceManager):
             return Driver(ipman)
 
         ipmanagers = []
-        for ipman in clusto.get_entities(clusto_types=[cls]):
+        for ipman in clusto.get_entities(clusto_drivers=[cls]):
             try:
                 ipman.ensure_type(ip)
                 ipmanagers.append(Driver(ipman))
