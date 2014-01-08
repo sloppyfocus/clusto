@@ -522,6 +522,10 @@ class Entity(ProtectedObj):
         return str(self.name)
 
     @property
+    def counters(self):
+        return Counter.query().filter(Counter.entity==self).all()
+
+    @property
     def attrs(self):
         return Attribute.query().filter(Attribute.entity==self).all()
 
@@ -544,6 +548,9 @@ class Entity(ProtectedObj):
                 i.delete()
 
             for i in self.attrs:
+                i.delete()
+
+            for i in self.counters:
                 i.delete()
 
             if SESSION.clusto_versioning_enabled:
