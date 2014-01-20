@@ -192,6 +192,10 @@ class Counter(object):
 
         return ctr
 
+    @classmethod
+    def query(cls):
+        return SESSION.query(cls)
+
 class ProtectedObj(object):
 
     ## this is a hack to make these objects immutable-ish
