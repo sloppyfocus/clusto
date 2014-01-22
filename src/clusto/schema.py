@@ -180,6 +180,11 @@ class Counter(object):
         audit_log.info('increment counter entity=%s attr_key=%s value=%s', self.entity.name, self.attr_key, self.value)
         return self.value
 
+    def delete(self):
+        audit_log.info('delete counter entity=%s attr_key=%s value=%s', self.entity.name, self.attr_key, self.value)
+        SESSION.delete(self)
+        SESSION.flush()
+
     @classmethod
     def get(cls, entity, keyname, default=0):
 
