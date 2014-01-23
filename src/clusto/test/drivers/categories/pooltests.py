@@ -231,3 +231,19 @@ class PoolTests(testbase.ClustoTestBase):
         self.assertRaises(LookupError,
                           clusto.get_from_pools, 'p1', 'non-existent-pool')
 
+    def testPoolDelete(self):
+
+        p5 = Pool('p5')
+        d1 = clusto.get_by_name('d1')
+
+        p5.insert(d1)
+        
+        clusto.flush()
+
+        self.assertTrue(isinstance(clusto.get_by_name('p5'), Pool))
+
+        clusto.get_by_name('p5').entity.delete()
+
+        clusto.flush()
+
+        self.assertRaises(LookupError, clusto.get_by_name, 'p5')

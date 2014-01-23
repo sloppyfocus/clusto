@@ -180,6 +180,11 @@ class Counter(object):
         audit_log.info('increment counter entity=%s attr_key=%s value=%s', self.entity.name, self.attr_key, self.value)
         return self.value
 
+    def delete(self):
+        audit_log.info('delete counter entity=%s attr_key=%s value=%s', self.entity.name, self.attr_key, self.value)
+        SESSION.delete(self)
+        SESSION.flush()
+
     @classmethod
     def get(cls, entity, keyname, default=0):
 
@@ -191,6 +196,10 @@ class Counter(object):
             ctr = cls(entity, keyname, default)
 
         return ctr
+
+    @classmethod
+    def query(cls):
+        return SESSION.query(cls)
 
 class ProtectedObj(object):
 
@@ -522,6 +531,10 @@ class Entity(ProtectedObj):
         return str(self.name)
 
     @property
+    def counters(self):
+        return Counter.query().filter(Counter.entity==self).all()
+
+    @property
     def attrs(self):
         return Attribute.query().filter(Attribute.entity==self).all()
 
@@ -544,6 +557,9 @@ class Entity(ProtectedObj):
                 i.delete()
 
             for i in self.attrs:
+                i.delete()
+
+            for i in self.counters:
                 i.delete()
 
             if SESSION.clusto_versioning_enabled:
