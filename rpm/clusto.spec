@@ -6,7 +6,7 @@
 %{!?_with_psycopg2: %{!?_without_psycopg2: %define _without_psycopg2 --without-psycopg2}}
 
 Name:		clusto
-Version:	0.7.6
+Version:	0.7.7
 Release:	0%{?dist}
 Summary:	Tools and libraries for organizing and managing infrastructure
 
@@ -78,6 +78,16 @@ cp -R web/static/* %{buildroot}%{_datadir}/%{name}/web/
 
 
 %changelog
+* Fri Jan 24 2014 Jorge A Gallegos <kad@blegh.net> - 0.7.7-0
+- Bumping version, preparing for release (Jorge Gallegos)
+- Merge pull request #41 from motivator/pr/40 (Jeremy Grosser)
+- add delete() to Counter; add testPoolDelete() (Mike Newton)
+- Add query to Counter (Daniel Chen)
+- Delete references from the counters table (Daniel Chen)
+- Set memcache warning to debug level (Jeremy Grosser)
+- Fix whitespace in debian/changelog (Jeremy Grosser)
+- Put the "NUM" column back in clusto-attr show output (Jeremy Grosser)
+
 * Mon Nov 4 2013 Mike Newton <mike@delusion.org> - 0.7.6
 - Merge pull request #35 from thekad/master (Jeremy Grosser)
 - Adding more options to get_conf (Jorge Gallegos)
