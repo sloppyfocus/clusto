@@ -1,4 +1,4 @@
-clusto (0.7.0) unstable; urgency=medium
+clusto (0.7.7) unstable; urgency=medium
 
   * Bumping version, preparing for release (Jorge Gallegos)
   * Merge pull request #41 from motivator/pr/40 (Jeremy Grosser)
