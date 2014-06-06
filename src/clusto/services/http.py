@@ -7,7 +7,6 @@ except ImportError:
 from webob import Request, Response
 from traceback import format_exc
 from urllib import unquote_plus
-import new
 import re
 import os
 
@@ -27,7 +26,7 @@ def unclusto(obj):
     Convert an object to a representation that can be safely serialized into
     JSON.
     '''
-    if type(obj) in (str, unicode, int) or obj == None:
+    if type(obj) in (str, unicode, int) or obj is None:
         return obj
     if isinstance(obj, clusto.Attribute):
         return {
@@ -154,6 +153,7 @@ class EntityAPI(object):
         '''
         Returns attributes and actions available for this object.
         '''
+        search_parents = bool(request.params.get('search_parents', False))
         result = {}
         result['object'] = self.url
         result['driver'] = self.obj.driver
@@ -163,7 +163,8 @@ class EntityAPI(object):
             attrs.append(unclusto(x))
         result['attrs'] = attrs
         result['contents'] = [unclusto(x) for x in self.obj.contents()]
-        result['parents'] = [unclusto(x) for x in self.obj.parents()]
+        result['parents'] = [unclusto(x) for x in
+                             self.obj.parents(search_parents=search_parents)]
         result['actions'] = [x for x in dir(self) if not x.startswith('_') and callable(getattr(self, x))]
 
         return dumps(request, result)
@@ -252,7 +253,8 @@ class QueryAPI(object):
     def get_entities(self, request):
         kwargs = {'attrs': []}
         for k, v in request.params.items():
-            if k in ('format', 'callback'): continue
+            if k in ('format', 'callback'):
+                continue
             v = loads(request, unquote_plus(v))
             kwargs[str(k)] = v
 
@@ -384,7 +386,8 @@ class ClustoApp(object):
             obj = clusto.get_by_name(objname)
             if obj:
                 return Response(status=409, body='409 Conflict\nObject already exists\n')
-        except LookupError: pass
+        except LookupError:
+            pass
 
         obj = clusto.driverlist[objtype](objname)
 
