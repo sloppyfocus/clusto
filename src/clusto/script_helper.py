@@ -324,7 +324,7 @@ def main():
         klass.init_script(args=args, logger=log)
         return(klass.run(args))
     except Exception as e:
-        log.error(str(e))
+        log.exception('Error running clusto command')
         return 99
 
 
