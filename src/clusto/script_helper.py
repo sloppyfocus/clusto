@@ -13,6 +13,7 @@ try:
 except ImportError:
     import json
 import logging
+import traceback
 import os
 import sys
 import clusto
@@ -324,7 +325,8 @@ def main():
         klass.init_script(args=args, logger=log)
         return(klass.run(args))
     except Exception as e:
-        log.exception('Error running clusto command')
+        log.debug(traceback.format_tb())
+        log.error(str(e))
         return 99
 
 
