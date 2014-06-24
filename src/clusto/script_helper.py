@@ -325,7 +325,7 @@ def main():
         klass.init_script(args=args, logger=log)
         return(klass.run(args))
     except Exception as e:
-        log.debug(traceback.format_tb())
+        log.debug('\n'.join(traceback.format_tb(sys.exc_info()[2])))
         log.error(str(e))
         return 99
 
