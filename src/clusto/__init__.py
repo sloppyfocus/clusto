@@ -17,7 +17,7 @@ import re
 driverlist = DRIVERLIST
 typelist = TYPELIST
 
-def connect(config, echo=False):
+def connect(config, echo=True):
     """Connect to a given Clusto datastore.
 
     Accepts a config object with (at least) a DSN string
@@ -31,7 +31,7 @@ def connect(config, echo=False):
     SESSION.configure(bind=create_engine(config.get('clusto', 'dsn'),
                                          echo=echo,
                                          poolclass=SingletonThreadPool,
-                                         pool_recycle=600
+                                         pool_recycle=600,
                                          ))
 
     SESSION.clusto_version = None

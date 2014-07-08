@@ -720,7 +720,11 @@ class Driver(object):
         else:
             search_children = False
 
-        contents = [attr.value for attr in self.content_attrs(*args, **kwargs)]
+        contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
+        contents_entities = Entity.query().filter(
+            Entity.entity_id.in_(contents_entity_ids)).all()
+        contents = [Driver(e) for e in contents_entities]
+
         if search_children:
             for child in (attr.value for attr in
                           self.content_attrs(clusto_types=['pool'])):
