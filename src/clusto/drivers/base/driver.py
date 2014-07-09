@@ -255,7 +255,7 @@ class Driver(object):
 
         if key is not ():
             key = unicode(key)
-        
+
             if glob:
                 query = query.filter(Attribute.key.like(key.replace('*', '%')))
             else:
@@ -264,7 +264,7 @@ class Driver(object):
         if subkey is not ():
             if subkey is not None:
                 subkey = unicode(subkey)
-        
+
             if glob and subkey:
                 query = query.filter(Attribute.subkey.like(subkey.replace('*', '%')))
             else:
@@ -281,10 +281,10 @@ class Driver(object):
                 if typename == 'json':
                     typename = 'string'
                     value = json.dumps(value)
-                
+
                 if typename == 'string':
                     value = unicode(value)
-                
+
                 query = query.filter_by(**{typename+'_value':value})
 
         if number is not ():
