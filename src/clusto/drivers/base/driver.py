@@ -724,11 +724,11 @@ class Driver(object):
 
         # sqlalchemy generates a bad query if you pass an empty list to an in_
         # clause
+        contents_entities = []
         if contents_entity_ids:
-            content_entities = []
             # Query for 500 elements at a time
             for batch_iterator in batch(contents_entity_ids, 500):
-                content_entities.extend(Entity.query().filter(
+                contents_entities.extend(Entity.query().filter(
                     Entity.entity_id.in_(list(batch_iterator))).all())
         else:
             contents_entities = []
