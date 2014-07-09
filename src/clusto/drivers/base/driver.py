@@ -721,8 +721,14 @@ class Driver(object):
             search_children = False
 
         contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
-        contents_entities = Entity.query().filter(
-            Entity.entity_id.in_(contents_entity_ids)).all()
+
+        # sqlalchemy generates a bad query if you pass an empty list to an in_
+        # clause
+        if contents_entity_ids:
+            contents_entities = Entity.query().filter(
+                Entity.entity_id.in_(contents_entity_ids)).all()
+        else:
+            contents_entities = []
         contents = [Driver(e) for e in contents_entities]
 
         if search_children:
