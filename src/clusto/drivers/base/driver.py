@@ -4,12 +4,12 @@ A Driver provides an interface to an Entity and its Attributes.
 """
 
 import re
-import itertools
 import logging
 
 import clusto
 from clusto.schema import *
 from clusto.exceptions import *
+from clusto.util import batch
 
 from clusto.drivers.base.clustodriver import *
 
@@ -635,7 +635,7 @@ class Driver(object):
                     memcache_keys.append(str(mk))
                 if attr.subkey:
                     mk += '.%s' % attr.subkey
-                memcache_keys.append(str(mk)) 
+                memcache_keys.append(str(mk))
             memcache_keys = set(memcache_keys)
             for mk in memcache_keys:
                 logging.debug('Expiring %s' % mk)
@@ -725,8 +725,11 @@ class Driver(object):
         # sqlalchemy generates a bad query if you pass an empty list to an in_
         # clause
         if contents_entity_ids:
-            contents_entities = Entity.query().filter(
-                Entity.entity_id.in_(contents_entity_ids)).all()
+            content_entities = []
+            # Query for 500 elements at a time
+            for batch_iterator in batch(contents_entity_ids, 500):
+                content_entities.extend(Entity.query().filter(
+                    Entity.entity_id.in_(list(batch_iterator))).all())
         else:
             contents_entities = []
         contents = [Driver(e) for e in contents_entities]
