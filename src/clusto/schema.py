@@ -254,7 +254,7 @@ class Attribute(ProtectedObj):
 
         if subkey is not None:
             subkey = unicode(subkey)
-            
+
         self.subkey = subkey
         self.version = working_version()
         if isinstance(number, bool) and number == True:
@@ -379,12 +379,12 @@ class Attribute(ProtectedObj):
                 value = int(value)
             elif self.datatype == 'json':
                 value = json.dumps(value)
-        
+
         value_type = self.get_value_type(value)
-        
+
         if value_type == 'string_value' and value is not None:
             value = unicode(value)
-        
+
         setattr(self, value_type, value)
 
         audit_log.info('set attribute entity=%s key=%s subkey=%s value=%s number=%s datatype=%s',
@@ -432,7 +432,7 @@ class Attribute(ProtectedObj):
         if subkey is not ():
             if subkey is not None:
                 subkey = unicode(subkey)
-        
+
             args.append(Attribute.subkey==subkey)
 
         if value is not ():
@@ -449,7 +449,7 @@ class Attribute(ProtectedObj):
             elif valtype == 'string_value':
                 if value is not None:
                     value = unicode(value)
-                    
+
                 args.append(getattr(Attribute, 'string_value') == value)
             else:
                 args.append(getattr(Attribute, valtype) == value)

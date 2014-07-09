@@ -4,12 +4,12 @@ A Driver provides an interface to an Entity and its Attributes.
 """
 
 import re
-import itertools
 import logging
 
 import clusto
 from clusto.schema import *
 from clusto.exceptions import *
+from clusto.util import batch
 
 from clusto.drivers.base.clustodriver import *
 
@@ -255,7 +255,7 @@ class Driver(object):
 
         if key is not ():
             key = unicode(key)
-        
+
             if glob:
                 query = query.filter(Attribute.key.like(key.replace('*', '%')))
             else:
@@ -264,7 +264,7 @@ class Driver(object):
         if subkey is not ():
             if subkey is not None:
                 subkey = unicode(subkey)
-        
+
             if glob and subkey:
                 query = query.filter(Attribute.subkey.like(subkey.replace('*', '%')))
             else:
@@ -281,10 +281,10 @@ class Driver(object):
                 if typename == 'json':
                     typename = 'string'
                     value = json.dumps(value)
-                
+
                 if typename == 'string':
                     value = unicode(value)
-                
+
                 query = query.filter_by(**{typename+'_value':value})
 
         if number is not ():
@@ -635,7 +635,7 @@ class Driver(object):
                     memcache_keys.append(str(mk))
                 if attr.subkey:
                     mk += '.%s' % attr.subkey
-                memcache_keys.append(str(mk)) 
+                memcache_keys.append(str(mk))
             memcache_keys = set(memcache_keys)
             for mk in memcache_keys:
                 logging.debug('Expiring %s' % mk)
@@ -720,7 +720,20 @@ class Driver(object):
         else:
             search_children = False
 
-        contents = [attr.value for attr in self.content_attrs(*args, **kwargs)]
+        contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
+
+        # sqlalchemy generates a bad query if you pass an empty list to an in_
+        # clause
+        contents_entities = []
+        if contents_entity_ids:
+            # Query for 500 elements at a time
+            for batch_iterator in batch(contents_entity_ids, 500):
+                contents_entities.extend(Entity.query().filter(
+                    Entity.entity_id.in_(list(batch_iterator))).all())
+        else:
+            contents_entities = []
+        contents = [Driver(e) for e in contents_entities]
+
         if search_children:
             for child in (attr.value for attr in self.content_attrs()):
                 kwargs['search_children'] = search_children
