@@ -50,6 +50,6 @@ class TestUtil(unittest.TestCase):
 
     def test_batch_zero_batch_length(self):
         i = clusto.util.batch(xrange(100), 0)
-        with self.assertRaises(ValueError):
+        with self.assertRaises(AssertionError):
             for g in i:
                 pass
