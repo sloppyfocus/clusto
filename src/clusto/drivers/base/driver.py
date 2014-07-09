@@ -732,8 +732,7 @@ class Driver(object):
         contents = [Driver(e) for e in contents_entities]
 
         if search_children:
-            for child in (attr.value for attr in
-                          self.content_attrs(clusto_types=['pool'])):
+            for child in (attr.value for attr in self.content_attrs()):
                 kwargs['search_children'] = search_children
                 contents.extend(child.contents(*args, **kwargs))
 
