@@ -7,16 +7,18 @@ import re
 import logging
 
 import clusto
-from clusto.schema import *
-from clusto.exceptions import *
+from clusto.schema import Entity, Attribute
+from clusto.exceptions import DriverException, NameException
 from clusto.util import batch
 
-from clusto.drivers.base.clustodriver import *
+from clusto.drivers.base.clustodriver import ClustoDriver, DRIVERLIST
+from sqlalchemy import and_, not_
 
 try:
     import simplejson as json
 except:
     import json
+
 
 class Driver(object):
     """Base Driver.
@@ -68,7 +70,6 @@ class Driver(object):
 
     _properties = dict()
 
-
     @property
     def type(self):
         return self.entity.type
@@ -102,19 +103,16 @@ class Driver(object):
 
             try:
                 existing = clusto.get_by_name(name_driver_entity)
-            except LookupError, x:
+            except LookupError:
                 existing = None
 
             if existing:
                 raise NameException("Driver with the name %s already exists."
                                     % (name_driver_entity))
 
-
             self.entity = Entity(name_driver_entity,
                                  driver=self._driver_name,
                                  clustotype=self._clusto_type)
-
-
         else:
             raise TypeError("Could not create driver from given arguments.")
 
@@ -124,7 +122,6 @@ class Driver(object):
             if val is None:
                 continue
             setattr(self, key, val)
-
 
     def __eq__(self, other):
 
@@ -168,10 +165,7 @@ class Driver(object):
 
         self.__class__ = DRIVERLIST[self.entity.driver]
 
-
-
     name = property(lambda x: x.entity.name)
-
 
     def _check_attr_name(self, key):
         """
@@ -188,7 +182,6 @@ class Driver(object):
                                 "Attribute names may not contain periods or "
                                 "comas." % key)
 
-
     def __getattr__(self, name):
         if name in self._properties:
             attr = self.attr_query(name, subkey='property')
@@ -198,7 +191,6 @@ class Driver(object):
                 return attr[0].value
         else:
             raise AttributeError("Attribute %s does not exist." % name)
-
 
     def __setattr__(self, name, value):
 
@@ -229,9 +221,9 @@ class Driver(object):
 
     @classmethod
     def do_attr_query(cls, key=(), value=(), number=(), start_timestamp=(), end_timestamp=(),
-                    subkey=(), ignore_hidden=True, sort_by_keys=False,
-                    glob=False, count=False, querybase=None, return_query=False,
-                    entity=None):
+                      subkey=(), ignore_hidden=True, sort_by_keys=False,
+                      glob=False, count=False, querybase=None, return_query=False,
+                      entity=None):
         """Does queries against all Attributes using the DB."""
 
         clusto.flush()
@@ -242,7 +234,7 @@ class Driver(object):
 
         ### This is bunk, gotta fix it
         if isinstance(cls, Driver):
-            query = query.filter(and_(Attribute.entity_id==Entity.entity_id,
+            query = query.filter(and_(Attribute.entity_id == Entity.entity_id,
                                       Entity.driver == cls._driver_name,
                                       Entity.type == cls._clusto_type))
 
@@ -285,14 +277,14 @@ class Driver(object):
                 if typename == 'string':
                     value = unicode(value)
 
-                query = query.filter_by(**{typename+'_value':value})
+                query = query.filter_by(**{typename+'_value': value})
 
         if number is not ():
             if isinstance(number, bool) or number is None:
-                if number == True:
-                    query = query.filter(Attribute.number != None)
+                if number:
+                    query = query.filter(Attribute.number != None)  # noqa
                 else:
-                    query = query.filter(Attribute.number == None)
+                    query = query.filter(Attribute.number == None)  # noqa
             elif isinstance(number, (int, long)):
                 query = query.filter_by(number=number)
 
@@ -322,12 +314,12 @@ class Driver(object):
 
     @classmethod
     def attr_filter(cls, attrlist, key=(), value=(), number=(),
-                   subkey=(), ignore_hidden=True,
-                   sort_by_keys=True,
-                   regex=False,
-                   clusto_types=None,
-                   clusto_drivers=None,
-                   ):
+                    subkey=(), ignore_hidden=True,
+                    sort_by_keys=True,
+                    regex=False,
+                    clusto_types=None,
+                    clusto_drivers=None,
+                    ):
         """Filter attribute lists. (Uses generator comprehension)
 
         Given a list of Attributes filter them based on exact matches of key,
@@ -356,7 +348,6 @@ class Driver(object):
         relation attributes must match.
         """
 
-
         result = attrlist
 
         def subfilter(attrs, val, name):
@@ -370,15 +361,13 @@ class Driver(object):
                 result = (attr for attr in attrs
                           if getattr(attr, name) == val)
 
-
             return result
 
         parts = ((key, 'key'), (subkey, 'subkey'), (value, 'value'))
-        argattr = ((val,name) for val,name in parts if val is not ())
+        argattr = ((val, name) for val, name in parts if val is not ())
 
         for v, n in argattr:
             result = subfilter(result, v, n)
-
 
         if number is not ():
             if isinstance(number, bool) or number is None:
@@ -393,10 +382,8 @@ class Driver(object):
             else:
                 raise TypeError("number must be either a boolean or an integer.")
 
-
         if value:
             result = (attr for attr in result if attr.value == value)
-
 
         if key and key.startswith('_'):
             ignore_hidden = False
@@ -406,7 +393,8 @@ class Driver(object):
 
         if clusto_drivers:
             cdl = [clusto.get_driver_name(n) for n in clusto_drivers]
-            result = (attr for attr in result if attr.is_relation and attr.value.entity.driver in cdl)
+            result = (attr for attr in result if attr.is_relation and
+                      attr.value.entity.driver in cdl)
 
         if clusto_types:
             ctl = [clusto.get_type_name(n) for n in clusto_types]
@@ -414,7 +402,6 @@ class Driver(object):
 
         if sort_by_keys:
             result = sorted(result)
-
 
         return list(result)
 
@@ -507,7 +494,6 @@ class Driver(object):
         opposed to the Entity the attribute refers to.
         """
 
-
         clusto_drivers = kwargs.pop('clusto_drivers', None)
 
         clusto_types = kwargs.pop('clusto_types', None)
@@ -522,7 +508,6 @@ class Driver(object):
             ctl = [clusto.get_type_name(n) for n in clusto_types]
             result = (attr for attr in result if attr.entity.type in ctl)
 
-
         return list(result)
 
     def referencers(self, *args, **kwargs):
@@ -533,14 +518,12 @@ class Driver(object):
         """
 
         refs = [Driver(a.entity) for a in sorted(self.references(*args, **kwargs),
-                                                 lambda x,y: cmp(x.attr_id,
-                                                                 y.attr_id))]
+                                                 lambda x, y: cmp(x.attr_id,
+                                                                  y.attr_id))]
 
         return refs
 
-
     def attr_keys(self, *args, **kwargs):
-
         return [x.key for x in self.attrs(*args, **kwargs)]
 
     def attr_key_tuples(self, *args, **kwargs):
@@ -576,10 +559,8 @@ class Driver(object):
         if subkey is ():
             subkey = None
 
-
         self.expire(key=key)
         return self.entity.add_attr(key, value, subkey=subkey, number=number)
-
 
     def del_attrs(self, *args, **kwargs):
         "delete attribute with the given key and value optionally value also"
@@ -594,7 +575,6 @@ class Driver(object):
         except Exception, x:
             clusto.rollback_transaction()
             raise x
-
 
     def set_attr(self, key, value, number=False, subkey=None):
         """replaces all attributes with the given key"""
@@ -614,7 +594,6 @@ class Driver(object):
             attr = self.add_attr(key, value, number=number, subkey=subkey)
 
         return attr
-
 
     def expire(self, *args, **kwargs):
         """Expires the memcache value (if using memcache) of this object"""
@@ -662,9 +641,8 @@ class Driver(object):
         """
 
         d = self.ensure_driver(thing,
-                              "Can only insert an Entity or a Driver. "
-                              "Tried to insert %s." % str(type(thing)))
-
+                               "Can only insert an Entity or a Driver. "
+                               "Tried to insert %s." % str(type(thing)))
 
         parent = thing.parents()
 
@@ -693,7 +671,6 @@ class Driver(object):
             raise TypeError("Can only remove an Entity or a Driver. "
                             "Tried to remove %s." % str(type(thing)))
 
-
         self.del_attrs("_contains", d, ignore_hidden=False)
 
     def content_attrs(self, *args, **kwargs):
@@ -704,6 +681,23 @@ class Driver(object):
         attrs = self.attrs("_contains", *args, **kwargs)
 
         return attrs
+
+    def _get_contents(self, *args, **kwargs):
+        contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
+
+        # sqlalchemy generates a bad query if you pass an empty list to an in_
+        # clause
+        contents_entities = []
+        if contents_entity_ids:
+            # Query for 500 elements at a time
+            for batch_iterator in batch(contents_entity_ids, 500):
+                contents_entities.extend(Entity.query().filter(
+                    Entity.entity_id.in_(list(batch_iterator))).all())
+        else:
+            contents_entities = []
+        contents = [Driver(e) for e in contents_entities]
+
+        return contents
 
     def contents(self, *args, **kwargs):
         """Return the contents of this Entity.  Such that:
@@ -720,22 +714,10 @@ class Driver(object):
         else:
             search_children = False
 
-        contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
-
-        # sqlalchemy generates a bad query if you pass an empty list to an in_
-        # clause
-        contents_entities = []
-        if contents_entity_ids:
-            # Query for 500 elements at a time
-            for batch_iterator in batch(contents_entity_ids, 500):
-                contents_entities.extend(Entity.query().filter(
-                    Entity.entity_id.in_(list(batch_iterator))).all())
-        else:
-            contents_entities = []
-        contents = [Driver(e) for e in contents_entities]
+        contents = self._get_contents(*args, **kwargs)
 
         if search_children:
-            for child in (attr.value for attr in self.content_attrs()):
+            for child in self._get_contents():
                 kwargs['search_children'] = search_children
                 contents.extend(child.contents(*args, **kwargs))
 
@@ -747,7 +729,7 @@ class Driver(object):
         search_parents = kwargs.pop('search_parents', False)
 
         if search_parents:
-            parents=self.parents(**kwargs)
+            parents = self.parents(**kwargs)
             allparents = self.parents()
             for thing in allparents:
                 allparents.extend(thing.parents())
@@ -781,7 +763,8 @@ class Driver(object):
         if additional_pools:
             parents.extend(additional_pools)
 
-        return [s for s in clusto.get_from_pools(parents, search_children=False, **kwargs) if s != self]
+        return [s for s in clusto.get_from_pools(parents,
+                                                 search_children=False, **kwargs) if s != self]
 
     @classmethod
     def get_by_attr(cls, *args, **kwargs):
@@ -793,12 +776,9 @@ class Driver(object):
 
         return objs
 
-
-
     @property
     def name(self):
         return self.entity.name
-
 
     def update_metadata(self, *args, **kwargs):
         """Update entity's metadata"""
