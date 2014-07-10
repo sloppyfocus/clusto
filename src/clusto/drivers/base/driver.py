@@ -705,6 +705,24 @@ class Driver(object):
 
         return attrs
 
+    def _get_contents(self, *args, **kwargs):
+        contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
+
+        # sqlalchemy generates a bad query if you pass an empty list to an in_
+        # clause
+        contents_entities = []
+        if contents_entity_ids:
+            # Query for 500 elements at a time
+            for batch_iterator in batch(contents_entity_ids, 500):
+                contents_entities.extend(Entity.query().filter(
+                    Entity.entity_id.in_(list(batch_iterator))).all())
+        else:
+            contents_entities = []
+        contents = [Driver(e) for e in contents_entities]
+
+        return contents
+
+
     def contents(self, *args, **kwargs):
         """Return the contents of this Entity.  Such that:
 
@@ -720,22 +738,10 @@ class Driver(object):
         else:
             search_children = False
 
-        contents_entity_ids = [attr.relation_id for attr in self.content_attrs(*args, **kwargs)]
-
-        # sqlalchemy generates a bad query if you pass an empty list to an in_
-        # clause
-        contents_entities = []
-        if contents_entity_ids:
-            # Query for 500 elements at a time
-            for batch_iterator in batch(contents_entity_ids, 500):
-                contents_entities.extend(Entity.query().filter(
-                    Entity.entity_id.in_(list(batch_iterator))).all())
-        else:
-            contents_entities = []
-        contents = [Driver(e) for e in contents_entities]
+        contents = self._get_contents(*args, **kwargs)
 
         if search_children:
-            for child in (attr.value for attr in self.content_attrs()):
+            for child in self._get_contents():
                 kwargs['search_children'] = search_children
                 contents.extend(child.contents(*args, **kwargs))
 
