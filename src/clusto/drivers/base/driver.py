@@ -717,7 +717,25 @@ class Driver(object):
         contents = self._get_contents(*args, **kwargs)
 
         if search_children:
-            for child in self._get_contents():
+            # We want to prune our search so that children that do not have children do not need to
+            # be searched. To do so, we query for children that have a _contains attribute, and only
+            # call .contents() on those children.
+            children = self._get_contents()
+            children_entity_ids = [child.entity.entity_id for child in children]
+
+            if children_entity_ids:
+                contains_attributes = Attribute.query().filter(
+                    Attribute.key == '_contains').filter(
+                    Attribute.entity_id.in_(children_entity_ids)).all()
+            else:
+                contains_attributes = []
+
+            child_entity_ids_to_search = set([attr.entity_id for
+                                              attr in contains_attributes])
+            children_to_search = [child for child in children if
+                                  child.entity.entity_id in child_entity_ids_to_search]
+
+            for child in children_to_search:
                 kwargs['search_children'] = search_children
                 contents.extend(child.contents(*args, **kwargs))
 
