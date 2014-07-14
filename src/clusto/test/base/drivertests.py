@@ -341,14 +341,14 @@ class TestDriverContainerFunctions(testbase.ClustoTestBase):
                          [])
 
     def testContents(self):
-
+        
         d1 = Driver('d1')
         d2 = Driver('d2')
 
         d1.insert(d2)
-
+        
         self.assertEqual(d1.contents(), [d2])
-
+                         
 
     def testChildrenContents(self):
 
@@ -364,26 +364,7 @@ class TestDriverContainerFunctions(testbase.ClustoTestBase):
 
         self.assertEqual(sorted([p1,d1,d2]),
                          sorted(p2.contents(search_children=True)))
-
-    def testMultipleGrandchildrenContents(self):
-        p1 = Pool('p1')
-        p2 = Pool('p2')
-
-        d1 = Driver('d1')
-        d2 = Driver('d2')
-        d3 = Driver('d3')
-
-        p2.insert(d1)
-        p2.insert(d2)
-        p2.insert(d3)
-
-        p1.insert(p2)
-
-        self.assertEqual(sorted([p2, d1, d2, d3]),
-                         sorted(p1.contents(search_children=True)))
-
-
-
+        
     def testMultipleInserts(self):
 
         d1 = Driver('d1')
