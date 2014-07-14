@@ -359,9 +359,11 @@ class Attribute(ProtectedObj):
 
 
     def _get_value(self):
-
         if self.get_value_type() == 'relation_value':
-            return clusto.drivers.base.Driver(getattr(self, self.get_value_type()))
+            if hasattr(self, 'preloaded_relation_value'):
+                return getattr(self, 'preloaded_relation_value')
+            else:
+                return clusto.drivers.base.Driver(getattr(self, self.get_value_type()))
         else:
             val = getattr(self, self.get_value_type())
             if self.datatype == 'int':
@@ -536,7 +538,24 @@ class Entity(ProtectedObj):
 
     @property
     def attrs(self):
-        return Attribute.query().filter(Attribute.entity==self).all()
+        value_attrs = Attribute.query().filter(Attribute.entity == self and
+                                               Attribute.datatype != 'relation').all()
+        relation_attrs = Attribute.query().filter(Attribute.entity == self and
+                                                  Attribute.datatype == 'relation').all()
+
+        relation_entity_ids = [relation_attr.relation_id for relation_attr in relation_attrs]
+        if relation_entity_ids:
+            relation_entities = Entity.query().filter(
+                Entity.entity_id.in_(relation_entity_ids).all())
+        else:
+            relation_entities = []
+        relation_drivers = dict([(e.entity_id, Driver(e)) for e in relation_entities])
+
+        for relation_attr in relation_attrs:
+            if relation_attr.relation_id in relation_drivers:
+                setattr(relation_attr, 'preloaded_relation_value',
+                        relation_drivers[relation_attr.relation_id])
+        return value_attrs + relation_attrs
 
     @property
     def references(self):
