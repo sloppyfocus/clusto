@@ -393,12 +393,28 @@ class Driver(object):
 
         if clusto_drivers:
             cdl = [clusto.get_driver_name(n) for n in clusto_drivers]
-            result = (attr for attr in result if attr.is_relation and
-                      attr.value.entity.driver in cdl)
+            relation_attrs = [attr for attr in result if attr.is_relation]
+            if relation_attrs:
+                related_entities = Entity.query().filter(
+                    Entity.entity_id.in_([relation_attr.relation_id for relation_attr in
+                                          relation_attrs])).filter(Entity.driver.in_(cdl)).all()
+                related_entity_ids = set([e.entity_id for e in related_entities])
+                result = (attr for attr in relation_attrs if attr.relation_id in related_entity_ids)
+            else:
+                result = []
 
         if clusto_types:
             ctl = [clusto.get_type_name(n) for n in clusto_types]
-            result = (attr for attr in result if attr.is_relation and attr.value.entity.type in ctl)
+            relation_attrs = [attr for attr in result if attr.is_relation]
+            if relation_attrs:
+                related_entities = Entity.query().filter(
+                    Entity.entity_id.in_([relation_attr.relation_id for relation_attr in
+                                          relation_attrs])).filter(
+                    Entity.type.in_(ctl)).all()
+                related_entity_ids = set([e.entity_id for e in related_entities])
+                result = (attr for attr in relation_attrs if attr.relation_id in related_entity_ids)
+            else:
+                result = []
 
         if sort_by_keys:
             result = sorted(result)
@@ -449,11 +465,15 @@ class Driver(object):
         if merge_container_attrs:
             kwargs['merge_container_attrs'] = merge_container_attrs
             kwargs['ignore_memcache'] = ignore_memcache
-            for parent in self.parents():
-                for a in parent.attrs(*args,  **kwargs):
-                    if a not in attrs:
-                        attrs.append(a)
-
+            parent_entity_ids = [parent.entity.entity_id for parent in self.parents()]
+            while parent_entity_ids:
+                parent_attrs = Attribute.query().filter(Attribute.entity_id.in_(parent_entity_ids)).all()
+                attrs.extend(parent_attrs)
+                grandparent_contains_attributes = Attribute.query().filter(Attribute.relation_id.in_(parent_entity_ids)).filter(Attribute.key == '_contains').all()
+                parent_entity_ids = [a.entity_id for a in grandparent_contains_attributes]
+            kwargs.pop('merge_container_attrs')
+            kwargs.pop('ignore_memcache')
+            attrs = self.attr_filter(attrs, *args, **kwargs)
         return attrs
 
     def attr_values(self, *args, **kwargs):
@@ -493,20 +513,33 @@ class Driver(object):
         clusto_type or clusto_driver of the Entity that owns the attribute as
         opposed to the Entity the attribute refers to.
         """
-
         clusto_drivers = kwargs.pop('clusto_drivers', None)
-
         clusto_types = kwargs.pop('clusto_types', None)
 
         result = self.attr_filter(self.entity.references, *args, **kwargs)
 
+        attribute_entity_ids = [attr.entity_id for attr in result]
+
+        if not attribute_entity_ids:
+            return []
+
         if clusto_drivers:
             cdl = [clusto.get_driver_name(n) for n in clusto_drivers]
-            result = (attr for attr in result if attr.entity.driver in cdl)
+            entities = Entity.query().filter(
+                Entity.entity_id.in_(attribute_entity_ids)).filter(
+                Entity.driver.in_(cdl)).all()
+            valid_entity_ids = set([e.entity_id for e in entities])
+
+            result = (attr for attr in result if attr.entity_id in valid_entity_ids)
 
         if clusto_types:
             ctl = [clusto.get_type_name(n) for n in clusto_types]
-            result = (attr for attr in result if attr.entity.type in ctl)
+            entities = Entity.query().filter(
+                Entity.entity_id.in_(attribute_entity_ids)).filter(
+                Entity.type.in_(ctl)).all()
+            valid_entity_ids = set([e.entity_id for e in entities])
+
+            result = (attr for attr in result if attr.entity_id in valid_entity_ids)
 
         return list(result)
 
@@ -517,10 +550,16 @@ class Driver(object):
         argument.
         """
 
-        refs = [Driver(a.entity) for a in sorted(self.references(*args, **kwargs),
-                                                 lambda x, y: cmp(x.attr_id,
-                                                                  y.attr_id))]
+        referencing_entity_ids = [a.entity_id for a in sorted(self.references(*args, **kwargs),
+                                                              lambda x, y: cmp(x.attr_id,
+                                                                               y.attr_id))]
+        if not referencing_entity_ids:
+            return []
 
+        # This kinda sucks
+        sorting_dict = dict((entity_id, idx) for idx, entity_id in enumerate(referencing_entity_ids))
+        referencing_entities = Entity.query().filter(Entity.entity_id.in_(referencing_entity_ids)).all()
+        refs = sorted([Driver(e) for e in referencing_entities], key=lambda d: sorting_dict[d.entity.entity_id])
         return refs
 
     def attr_keys(self, *args, **kwargs):

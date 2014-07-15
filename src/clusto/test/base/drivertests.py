@@ -436,6 +436,7 @@ class TestDriverContainerFunctions(testbase.ClustoTestBase):
         self.assertEqual([d2],
                          d3.parents())
 
+        print d3.attr_values('foo', merge_container_attrs=True)
         self.assertEqual(['someval'],
                          d3.attr_values('foo', merge_container_attrs=True))
 
