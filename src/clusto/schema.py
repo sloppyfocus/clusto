@@ -219,7 +219,8 @@ class ProtectedObj(object):
     def __setattr__(self, name, val):
         if (name.startswith('_sa_')
             or self.writable
-            or name == 'writable'):
+            or name == 'writable'
+            or name.startswith('_clusto_writable_')):
             super(ProtectedObj, self).__setattr__(name, val)
         else:
             raise Exception("Not Writable")
@@ -360,8 +361,8 @@ class Attribute(ProtectedObj):
 
     def _get_value(self):
         if self.get_value_type() == 'relation_value':
-            if hasattr(self, 'preloaded_relation_value'):
-                return getattr(self, 'preloaded_relation_value')
+            if hasattr(self, '_clusto_writable_preloaded_relation_value'):
+                return getattr(self, '_clusto_writable_preloaded_relation_value')
             else:
                 return clusto.drivers.base.Driver(getattr(self, self.get_value_type()))
         else:
@@ -538,22 +539,25 @@ class Entity(ProtectedObj):
 
     @property
     def attrs(self):
-        value_attrs = Attribute.query().filter(Attribute.entity == self and
-                                               Attribute.datatype != 'relation').all()
-        relation_attrs = Attribute.query().filter(Attribute.entity == self and
-                                                  Attribute.datatype == 'relation').all()
+        value_attrs = Attribute.query().filter(
+            Attribute.entity == self).filter(
+            Attribute.datatype != 'relation').all()
+        relation_attrs = Attribute.query().filter(
+            Attribute.entity == self).filter(
+            Attribute.datatype == 'relation').all()
 
         relation_entity_ids = [relation_attr.relation_id for relation_attr in relation_attrs]
         if relation_entity_ids:
             relation_entities = Entity.query().filter(
-                Entity.entity_id.in_(relation_entity_ids).all())
+                Entity.entity_id.in_(relation_entity_ids)).all()
         else:
             relation_entities = []
-        relation_drivers = dict([(e.entity_id, Driver(e)) for e in relation_entities])
+        relation_drivers = dict([(e.entity_id, clusto.drivers.base.Driver(e))
+                                 for e in relation_entities])
 
         for relation_attr in relation_attrs:
             if relation_attr.relation_id in relation_drivers:
-                setattr(relation_attr, 'preloaded_relation_value',
+                setattr(relation_attr, '_clusto_writable_preloaded_relation_value',
                         relation_drivers[relation_attr.relation_id])
         return value_attrs + relation_attrs
 
