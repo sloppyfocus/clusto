@@ -393,7 +393,8 @@ class Driver(object):
 
         if clusto_drivers:
             cdl = [clusto.get_driver_name(n) for n in clusto_drivers]
-            relation_attrs = [attr for attr in result if attr.is_relation]
+            relation_attrs = [relation_attr for relation_attr in result if
+                              attr.is_relation]
             if relation_attrs:
                 related_entities = Entity.query().filter(
                     Entity.entity_id.in_([relation_attr.relation_id for relation_attr in
@@ -405,7 +406,8 @@ class Driver(object):
 
         if clusto_types:
             ctl = [clusto.get_type_name(n) for n in clusto_types]
-            relation_attrs = [attr for attr in result if attr.is_relation]
+            relation_attrs = [relation_attr for relation_attr in result if
+                              attr.is_relation]
             if relation_attrs:
                 related_entities = Entity.query().filter(
                     Entity.entity_id.in_([relation_attr.relation_id for relation_attr in
@@ -467,9 +469,12 @@ class Driver(object):
             kwargs['ignore_memcache'] = ignore_memcache
             parent_entity_ids = [parent.entity.entity_id for parent in self.parents()]
             while parent_entity_ids:
-                parent_attrs = Attribute.query().filter(Attribute.entity_id.in_(parent_entity_ids)).all()
+                parent_attrs = Attribute.query().filter(
+                    Attribute.entity_id.in_(parent_entity_ids)).all()
                 attrs.extend(parent_attrs)
-                grandparent_contains_attributes = Attribute.query().filter(Attribute.relation_id.in_(parent_entity_ids)).filter(Attribute.key == '_contains').all()
+                grandparent_contains_attributes = Attribute.query().filter(
+                    Attribute.relation_id.in_(parent_entity_ids)).filter(
+                    Attribute.key == '_contains').all()
                 parent_entity_ids = [a.entity_id for a in grandparent_contains_attributes]
             kwargs.pop('merge_container_attrs')
             kwargs.pop('ignore_memcache')
@@ -557,9 +562,12 @@ class Driver(object):
             return []
 
         # This kinda sucks
-        sorting_dict = dict((entity_id, idx) for idx, entity_id in enumerate(referencing_entity_ids))
-        referencing_entities = Entity.query().filter(Entity.entity_id.in_(referencing_entity_ids)).all()
-        refs = sorted([Driver(e) for e in referencing_entities], key=lambda d: sorting_dict[d.entity.entity_id])
+        sorting_dict = dict((entity_id, idx)
+                            for idx, entity_id in enumerate(referencing_entity_ids))
+        referencing_entities = Entity.query().filter(
+            Entity.entity_id.in_(referencing_entity_ids)).all()
+        refs = sorted([Driver(e) for e in referencing_entities],
+                      key=lambda d: sorting_dict[d.entity.entity_id])
         return refs
 
     def attr_keys(self, *args, **kwargs):
