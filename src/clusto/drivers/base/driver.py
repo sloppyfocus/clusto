@@ -394,7 +394,7 @@ class Driver(object):
         if clusto_drivers:
             cdl = [clusto.get_driver_name(n) for n in clusto_drivers]
             relation_attrs = [relation_attr for relation_attr in result if
-                              attr.is_relation]
+                              relation_attr.is_relation]
             if relation_attrs:
                 related_entities = Entity.query().filter(
                     Entity.entity_id.in_([relation_attr.relation_id for relation_attr in
@@ -407,7 +407,7 @@ class Driver(object):
         if clusto_types:
             ctl = [clusto.get_type_name(n) for n in clusto_types]
             relation_attrs = [relation_attr for relation_attr in result if
-                              attr.is_relation]
+                              relation_attr.is_relation]
             if relation_attrs:
                 related_entities = Entity.query().filter(
                     Entity.entity_id.in_([relation_attr.relation_id for relation_attr in
