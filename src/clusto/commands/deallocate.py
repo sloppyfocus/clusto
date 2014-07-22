@@ -72,6 +72,7 @@ class Deallocate(script_helper.Script):
         else:
             self.debug('Grabbing pool from config file or default')
             pool = self.get_conf('deallocate.pool', 'unallocated')
+        pool = clusto.get_by_name(pool)
         self.debug('Unallocated pool is "%s"' % pool)
 
 #       Load the attributes from the conf file
