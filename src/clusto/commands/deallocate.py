@@ -1,8 +1,7 @@
 #!/usr/bin/env python
-# -*- mode: python; sh-basic-offset: 4; indent-tabs-mode: nil; coding: utf-8 -*-
+# -*- mode:python; sh-basic-offset:4; indent-tabs-mode:nil; coding:utf-8 -*-
 # vim: tabstop=4 softtabstop=4 expandtab shiftwidth=4 fileencoding=utf-8
 
-import argparse
 import sys
 
 import clusto
@@ -17,28 +16,43 @@ class Deallocate(script_helper.Script):
     from every pool it is on to then put it in a pre-defined 'unallocated' pool
     '''
 
-    keep_attrs = ['port-console-serial', 'port-nic-eth', 'ip', 'system',
-        'port-pwr-nema-5', 'memory', 'disk', 'processor']
+    keep_attrs = [
+        'port-console-serial', 'port-nic-eth', 'ip', 'system',
+        'port-pwr-nema-5', 'memory', 'disk', 'processor'
+    ]
     hosts = []
 
     def __init__(self):
         script_helper.Script.__init__(self)
 
     def _add_arguments(self, parser):
-        parser.add_argument('--pool',
-            help='Target pool after deallocation (you can set this in clusto.conf too '
-                 'in deallocate.pool: --pool > clusto.conf:deallocate.pool > "unallocated")')
-        parser.add_argument('--keep-attrs',
-            help='Comma-separated keys to keep additional to whatever is configured '
-                 'in clusto.conf in deallocate.keep_attrs')
-        parser.add_argument('--reboot', action='store_true', default=False,
-            help='Reboot the server after deallocating (defaults to False)')
-        parser.add_argument('--shutdown', action='store_true', default=False,
-            help='Power-off the server after deallocating (defaults to False)')
-        parser.add_argument('--force-yes', action='store_true',
-            default=False, help='Force yes to deallocate')
-        parser.add_argument('objects', nargs='+',
-            help='Server names or IP addresses')
+        parser.add_argument(
+            '--pool',
+            help='Target pool after deallocation (you can set this in '
+            'clusto.conf too in deallocate.pool: --pool > '
+            'clusto.conf:deallocate.pool > "unallocated")'
+        )
+        parser.add_argument(
+            '--keep-attrs',
+            help='Comma-separated keys to keep additional to whatever is '
+            'configured in clusto.conf in deallocate.keep_attrs'
+        )
+        parser.add_argument(
+            '--reboot', action='store_true', default=False,
+            help='Reboot the server after deallocating (defaults to False)'
+        )
+        parser.add_argument(
+            '--shutdown', action='store_true', default=False,
+            help='Power-off the server after deallocating (defaults to False)'
+        )
+        parser.add_argument(
+            '--force-yes', action='store_true',
+            default=False, help='Force yes to deallocate'
+        )
+        parser.add_argument(
+            'objects', nargs='+',
+            help='Server names or IP addresses'
+        )
 
     def _clean_attrs(self, host):
         '''
@@ -47,7 +61,11 @@ class Deallocate(script_helper.Script):
         '''
 #   Clean attributes
         self.info('Cleaning up attributes from "%s"' % host.name)
-        attrs = set(sorted([x.key for x in host.attrs() if x.key not in self.keep_attrs]))
+        attrs = set(
+            sorted(
+                [x.key for x in host.attrs() if x.key not in self.keep_attrs]
+            )
+        )
         self.debug("List of attrs to remove: %s" % attrs)
         for attr in attrs:
             host.del_attrs(key=attr)
@@ -58,14 +76,18 @@ class Deallocate(script_helper.Script):
         '''
         self.info('Deallocating %s...' % host.name)
         pools = host.parents(clusto_types=[drivers.pool.Pool])
-#   Remove from pools
+        # Remove from pools
         for pool in pools:
             if pool.name != 'fai' and pool.name != 'unallocated':
-                self.info('Removing "%s" from pool "%s"' % (host.name, pool.name))
+                self.info(
+                    'Removing "%s" from pool "%s"' % (
+                        host.name, pool.name
+                    )
+                )
                 pool.remove(host)
 
     def run(self, args):
-#       get the 'unallocated' pool
+        # get the 'unallocated' pool
         if args.pool:
             self.debug('Grabbing pool from parameter')
             pool = args.pool
@@ -75,11 +97,11 @@ class Deallocate(script_helper.Script):
         pool = clusto.get_by_name(pool)
         self.debug('Unallocated pool is "%s"' % pool)
 
-#       Load the attributes from the conf file
+        # Load the attributes from the conf file
         for attr in self.get_conf('deallocate.keep_attrs', '').split(','):
             if attr.split():
                 self.keep_attrs.append(attr.strip())
-#       Append attributes from the command line, if any
+        # Append attributes from the command line, if any
         if args.keep_attrs:
             for attr in args.keep_attrs.split(','):
                 if attr not in self.keep_attrs:
@@ -89,7 +111,9 @@ class Deallocate(script_helper.Script):
             obj = clusto.get(obj)
             if obj not in self.hosts:
                 self.hosts.extend(obj)
-        self.info('This is the list of servers/ipaddresses that you will deallocate')
+        self.info(
+            'This is the list of servers/ipaddresses that you will deallocate'
+        )
         for host in self.hosts:
             if host.get_ips():
                 print '%s >> %s' % (host.name, ' '.join(host.get_ips()))
@@ -98,7 +122,9 @@ class Deallocate(script_helper.Script):
 
 #       Ask for confirmation
         if not args.force_yes:
-            sys.stdout.write('Are you absolutely sure you want to continue %s (yes/No)? ')
+            sys.stdout.write(
+                'Are you absolutely sure you want to continue %s (yes/No)? '
+            )
             sys.stdout.flush()
 
             try:
@@ -112,7 +138,11 @@ class Deallocate(script_helper.Script):
 
         for host in self.hosts:
             if not isinstance(host, drivers.servers.BasicServer):
-                self.warn('Cannot deallocate "%s" because is not a server' % host.name)
+                self.warn(
+                    'Cannot deallocate "%s" because is not a server' % (
+                        host.name,
+                    )
+                )
                 continue
             self._deallocate(host)
             self._clean_attrs(host)
@@ -126,10 +156,10 @@ class Deallocate(script_helper.Script):
                 continue
         self.info('Done.')
 
+
 def main():
     deallocate, args = script_helper.init_arguments(Deallocate)
     return(deallocate.run(args))
 
 if __name__ == '__main__':
     sys.exit(main())
-
