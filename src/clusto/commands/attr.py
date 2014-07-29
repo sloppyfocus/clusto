@@ -70,16 +70,17 @@ class Attr(script_helper.Script):
         self.debug('Printing in format: List')
         maxkey = 3 + max([len(str(_['key'])) for _ in attrs] + [0])
         maxsubkey = 6 + max([len(str(_['subkey'])) for _ in attrs] + [0])
-        maxnumber = 3 + max([len(str(_['number'])) for _ in attrs] + [0])
+        maxnumber = 6 + max([len(str(_['number'])) for _ in attrs] + [0])
 
         if maxkey < 5: maxkey = 5
         if maxsubkey < 8: maxsubkey = 8
 
-        print ''.join(['KEY'.ljust(maxkey, ' '), 'SUBKEY'.ljust(maxsubkey, ' '), 'VALUE'])
+        print ''.join(['KEY'.ljust(maxkey, ' '), 'SUBKEY'.ljust(maxsubkey, ' '), 'NUM'.ljust(maxnumber, ' '), 'VALUE'])
         for attr in attrs:
             print ''.join([str(_).ljust(maxsize, ' ') for _, maxsize in [
                 (attr['key'], maxkey),
                 (attr['subkey'], maxsubkey),
+                (attr['number'], maxnumber),
                 (attr['value'], 0),
             ]])
         return 0

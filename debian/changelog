@@ -1,3 +1,16 @@
+clusto (0.7.7) unstable; urgency=medium
+
+  * Bumping version, preparing for release (Jorge Gallegos)
+  * Merge pull request #41 from motivator/pr/40 (Jeremy Grosser)
+  * add delete() to Counter; add testPoolDelete() (Mike Newton)
+  * Add query to Counter (Daniel Chen)
+  * Delete references from the counters table (Daniel Chen)
+  * Set memcache warning to debug level (Jeremy Grosser)
+  * Fix whitespace in debian/changelog (Jeremy Grosser)
+  * Put the "NUM" column back in clusto-attr show output (Jeremy Grosser)
+
+ -- Jorge Gallegos <mike@delusion.org>  Fri, 24 Jan 2014 08:51:04 -0800
+
 clusto (0.7.6) unstable; urgency=low
 
   * Adding more options to get_conf (Jorge Gallegos)
@@ -9,7 +22,7 @@ clusto (0.7.6) unstable; urgency=low
   * Remove logging fileConfig and explicitly configure audit logging so that
     we don't break tools that
 
- -- Mike Newton <mike@delusion.org>    Mon, 04 Nov 2013 12:44:00 -0700
+ -- Mike Newton <mike@delusion.org>  Mon, 04 Nov 2013 12:44:00 -0700
 
 clusto (0.7.5-1) unstable; urgency=low
 
@@ -18,9 +31,9 @@ clusto (0.7.5-1) unstable; urgency=low
   * Pull the requirements from the main setup.py file
   * re-add WebOb to setup.py requires
   * ignore client_ids that don't parse according to this one scheme
-  * use basestring instead of str in a few places
+  * use basestring instead of str in a few places 
 
- -- Jorge A Gallegos <kad@blegh.net>   Tue, 22 Oct 2013 16:58:12 -0700
+ -- Jorge A Gallegos <kad@blegh.net>  Tue, 22 Oct 2013 16:58:12 -0700
 
 clusto (0.7.4) unstable; urgency=low
 

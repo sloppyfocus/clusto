@@ -1,7 +1,6 @@
 
 import clusto
 from clusto.test import testbase 
-import itertools
 
 from clusto.drivers import *
 from clusto.exceptions import PoolException
@@ -11,9 +10,12 @@ class PoolTests(testbase.ClustoTestBase):
     def data(self):
 
         d1 = Driver('d1')
+        assert d1
         d2 = Driver('d2')
+        assert d2
 
         p1 = Pool('p1')
+        assert p1
 
         clusto.flush()
 
@@ -21,7 +23,9 @@ class PoolTests(testbase.ClustoTestBase):
     def testPoolCreate(self):
 
         p3 = Pool('p3')
+        assert p3
         d3 = Driver('d3')
+        assert d3
         
         clusto.flush()
 
@@ -42,6 +46,7 @@ class PoolTests(testbase.ClustoTestBase):
 
 
         q = clusto.get_by_name('p1')
+        assert q
 
         membernames = sorted([x.name for x in p1.contents()])
 
@@ -209,7 +214,6 @@ class PoolTests(testbase.ClustoTestBase):
         s3 = BasicServer('s3')
         s4 = BasicServer('s4')
         s5 = BasicServer('s5')
-        s6 = BasicServer('s6')
 
         p1.insert(s1)
         p1.insert(s2)
@@ -237,3 +241,20 @@ class PoolTests(testbase.ClustoTestBase):
 
         # lax joining in get_from_entities should return an empty list in this case because s1 has no children
         self.assertEqual([], sorted(clusto.get_from_entities(['p1', 's1'])))
+
+    def testPoolDelete(self):
+
+        p5 = Pool('p5')
+        d1 = clusto.get_by_name('d1')
+
+        p5.insert(d1)
+        
+        clusto.flush()
+
+        self.assertTrue(isinstance(clusto.get_by_name('p5'), Pool))
+
+        clusto.get_by_name('p5').entity.delete()
+
+        clusto.flush()
+
+        self.assertRaises(LookupError, clusto.get_by_name, 'p5')
