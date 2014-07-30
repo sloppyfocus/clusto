@@ -183,32 +183,49 @@ def get_entities(names=(), clusto_types=(), clusto_drivers=(), attrs=()):
 
 
 def get_from_pools(pools, clusto_types=(), clusto_drivers=(), search_children=True):
-    """Get entitis that are in all the given pools
+    return get_from_entities(
+        entities=pools,
+        clusto_types=clusto_types,
+        clusto_drivers=clusto_drivers,
+        search_children=search_children,
+        assert_driver=drivers.Pool
+    )
+
+def get_from_entities(entities, clusto_types=(), clusto_drivers=(), search_children=True, assert_driver=None):
+    """Get entitis that are in all the given entities
 
     parameters:
-      pools - list of Pools or strings; pools you want the intersection for
+      entities - list of entities or strings you want the intersection for
       clusto_types - list of Drivers or strings; clusto types to filter on
       clusto_drivers - list of Drivers or strings; clusto drivers to filter on
+      assert_driver - if you want to be "strict" about what entity drivers to join
     """
 
-    pool_names = []
-    pool_types = []
+    ent_names = []
+    ent_types = []
 
-    for p in pools:
-        if isinstance(p, basestring):
-            pool_names.append(u'%s' % p)
-        elif isinstance(p, drivers.Pool):
-            pool_types.append(p)
+    for e in entities:
+        if isinstance(e, basestring):
+            ent_names.append(u'%s' % e)
         else:
-            raise TypeError("%s is neither a string or a Pool." % str(p))
+            if assert_driver: 
+                if isinstance(e, assert_driver):
+                    ent_types.append(e)
+                else:
+                    raise TypeError("%s is neither a string or a %s." % (str(e), assert_driver,))
+            else:
+                ent_types.append(e)
 
-    pls = pool_types
-    for pool_name in pool_names:
-        pls.append(get_by_name(pool_name))
+    ets = ent_types
+    for ent_name in ent_names:
+        if assert_driver:
+            ets.append(get_by_name(ent_name, assert_driver=assert_driver))
+        else:
+            ets.append(get_by_name(ent_name))
 
     resultsets = []
-    for p in pls:
-        contents = set(p.contents(clusto_types=clusto_types,
+    for e in ets:
+        contents = set(e.contents(clusto_types=clusto_types,
                                   clusto_drivers=clusto_drivers,
                                   search_children=search_children))
         resultsets.append(contents)
