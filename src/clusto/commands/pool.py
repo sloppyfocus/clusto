@@ -23,7 +23,7 @@ class Pool(script_helper.Script):
         p = clusto.get_by_name(pool)
         self.debug('%s is %s' % (pool, p))
         if not p or not isinstance(p, clusto.drivers.pool.Pool):
-            self.error('The pool "%s" does not exist or is not a pool')
+            self.error('The pool "%s" does not exist or is not a pool' % pool)
             return False
         return p
 
