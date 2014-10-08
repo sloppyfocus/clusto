@@ -32,6 +32,11 @@ class IPManager(ResourceManager):
     def _int_to_ipy(cls, num):
         return IPy.IP(num + cls._int_ip_const)
     
+    def _int_to_cidr(self, num):
+        ip = self._int_to_ipy(num)
+        net = ip.make_net(self.netmask)
+        return '%s/%i' % (ip.strNormal(), net.prefixlen())
+
     @property
     def ipy(self):
         if not hasattr(self, '__ipy'):
@@ -67,6 +72,7 @@ class IPManager(ResourceManager):
         resource, number = self.ensure_type(resource, number)
 
         thing.add_attr(self._attr_name, number=number, subkey='ipstring', value=str(self._int_to_ipy(resource)))
+        thing.add_attr(self._attr_name, number=number, subkey='cidr', value=str(self._int_to_cidr(resource)))
         
                      
     def allocator(self, thing=None):

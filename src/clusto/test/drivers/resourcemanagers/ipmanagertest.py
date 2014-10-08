@@ -76,4 +76,10 @@ class IPManagerTest(testbase.ClustoTestBase):
 
         self.assertRaises(ResourceException, ip2.allocate, s1, '10.0.128.4')
 
-        
+    def testAdditionalAttrs(self):
+        ip1, ip2, s1 = map(clusto.get_by_name, ['a1', 'b1', 's1'])
+
+        ip1.allocate(s1, '192.168.1.20')
+
+        self.assertEqual(str(s1.attr_value(key='ip', subkey='ipstring')), '192.168.1.20')
+        self.assertEqual(str(s1.attr_value(key='ip', subkey='cidr')), '192.168.1.20/24')
