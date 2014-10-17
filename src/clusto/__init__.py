@@ -3,6 +3,7 @@ from clusto.exceptions import *
 
 from clusto.drivers import DRIVERLIST, TYPELIST, Driver, ClustoMeta, IPManager
 from sqlalchemy.exc import InvalidRequestError
+from sqlalchemy.orm.exc import NoResultFound
 from sqlalchemy import create_engine
 from sqlalchemy.pool import SingletonThreadPool
 
@@ -235,8 +236,10 @@ def get_by_name(name, assert_driver=None):
                 raise TypeError("The object %s is not an instance of %s" % (name, assert_driver))
 
         return retval
-    except InvalidRequestError:
+    except NoResultFound:
         raise LookupError(name + " does not exist.")
+    except InvalidRequestError:
+        raise
 
 
 def get_by_names(names):
