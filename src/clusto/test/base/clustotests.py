@@ -4,7 +4,7 @@ from clusto.test import testbase
 import clusto
 from clusto.schema import *
 from clusto.drivers.base import *
-from clusto.drivers import BasicDatacenter, Pool, BasicServer, IPManager
+from clusto.drivers import BasicDatacenter, Pool, BasicServer, IPManager, BasicRack
 from sqlalchemy.exc import InvalidRequestError
 from clusto.exceptions import TransactionException
 
@@ -70,6 +70,26 @@ class TestClusto(testbase.ClustoTestBase):
         self.assertEqual(q.filter_by(name=u'e1').count(), 0)
 
         self.assertEqual(q.filter_by(name=u'f1').count(), 1)
+
+
+    def testRenameWithProperties(self):
+
+        rack1 = BasicRack('rack1')
+
+        rack1.set_attr(key='maxu', subkey='property', value=48)
+
+        for x in range(3):
+            rack1.add_attr(key='foo', subkey='bar', value=1, number=None)
+
+        clusto.rename('rack1', 'rack2')
+
+        rack2 = clusto.get_by_name('rack2')
+
+        self.assertEqual(rack2.attrs(key='maxu', subkey='property')[0].value, 48)
+
+        self.assertEqual(len(rack2.attrs(key='maxu')), 1)
+
+        self.assertEqual(len(rack2.attrs(key='foo', subkey='bar')), 3)
 
 
     def testChangeDriver(self):
