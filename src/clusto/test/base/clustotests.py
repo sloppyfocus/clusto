@@ -8,6 +8,17 @@ from clusto.drivers import BasicDatacenter, Pool, BasicServer, IPManager
 from sqlalchemy.exc import InvalidRequestError
 from clusto.exceptions import TransactionException
 
+# copied from mock
+class _ANY(object):
+    def __eq__(self, other):
+        return True
+
+    def __ne__(self, other):
+        return False
+
+
+ANY = _ANY()
+
 
 class TestClustoPlain(testbase.ClustoTestBase):
 
@@ -439,3 +450,48 @@ class TestClusto(testbase.ClustoTestBase):
         self.assertEqual(len(d1.attrs('key_foo')), 1)
 
         self.assertEqual(len(d1.attr_query('key_foo')), 1)
+
+
+class TestAdjacencyMap(testbase.ClustoTestBase):
+    def data(self):
+        self.p1 = Pool('p1')
+        self.p2 = Pool('p2')
+        self.e1 = Entity('e1')
+        self.e2 = Entity('e2')
+        self.p1.insert(self.e1)
+        self.p2.insert(self.e2)
+        self.p1.insert(self.p2)
+
+    def testAdjacencyMap(self):
+        adj_map = clusto.adjacency_map()
+        self.assertEquals(len(adj_map), 3)
+        self.assertIn(clusto.Adjacency(
+            parent_id=ANY, parent_name='p1', parent_type='pool',
+            child_id=ANY, child_name='p2', child_type='pool'
+        ), adj_map)
+        self.assertIn(clusto.Adjacency(
+            parent_id=ANY, parent_name='p1', parent_type='pool',
+            child_id=ANY, child_name='e1', child_type='entity'
+        ), adj_map)
+        self.assertIn(clusto.Adjacency(
+            parent_id=ANY, parent_name='p2', parent_type='pool',
+            child_id=ANY, child_name='e2', child_type='entity'
+        ), adj_map)
+
+    def testDeletedNotIncluded(self):
+        self.e2.delete()
+        adj_map = clusto.adjacency_map()
+        self.assertEquals(len(adj_map), 2)
+        self.assertNotIn(clusto.Adjacency(
+            parent_id=ANY, parent_name='p2', parent_type='pool',
+            child_id=ANY, child_name='e2', child_type='entity'
+        ), adj_map)
+
+    def testRemovedNotIncluded(self):
+        self.p1.remove(self.p2)
+        adj_map = clusto.adjacency_map()
+        self.assertEquals(len(adj_map), 2)
+        self.assertNotIn(clusto.Adjacency(
+            parent_id=ANY, parent_name='p1', parent_type='pool',
+            child_id=ANY, child_name='p2', child_type='pool'
+        ), adj_map)
