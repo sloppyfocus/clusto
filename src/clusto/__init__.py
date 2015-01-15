@@ -356,11 +356,16 @@ def rename(oldname, newname):
         new = get_driver(old.entity)(newname)
 
         for attr in old.attrs(ignore_hidden=False):
-            new.add_attr(key=attr.key,
-                         number=attr.number,
-                         subkey=attr.subkey,
-                         value=attr.value)
-
+            if attr.key not in new._properties:
+                new.add_attr(key=attr.key,
+                             number=attr.number,
+                             subkey=attr.subkey,
+                             value=attr.value)
+            else:
+                new.set_attr(key=attr.key,
+                             number=attr.number,
+                             subkey=attr.subkey,
+                             value=attr.value)
 
         for ref in old.references(ignore_hidden=False):
             drivers.base.Driver(ref.entity).add_attr(key=ref.key,
