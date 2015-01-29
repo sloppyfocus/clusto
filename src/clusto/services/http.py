@@ -87,6 +87,8 @@ class EntityAPI(object):
         '''
         kwargs = dict(request.params.items())
         datatype = kwargs.get('datatype', None)
+        kwargs.pop('datatype', None)
+
         if datatype == 'relation':
             try:
                 kwargs['value'] = clusto.get_by_name(kwargs['value'].rsplit('/', 1)[1])
@@ -94,6 +96,8 @@ class EntityAPI(object):
                 return Response(status=404, body='404 Not Found\n')
         elif datatype == 'int':
             kwargs['value'] = int(kwargs['value'])
+        else:
+            kwargs['value'] = str(kwargs['value'])
 
         self.obj.add_attr(**kwargs)
         return self.show(request)

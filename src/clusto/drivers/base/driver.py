@@ -580,7 +580,7 @@ class Driver(object):
     def attr_items(self, *args, **kwargs):
         return self._itemize_attrs(self.attrs(*args, **kwargs))
 
-    def add_attr(self, key, value=(), number=(), subkey=(), datatype=()):
+    def add_attr(self, key, value=(), number=(), subkey=()):
         """add a key/value to the list of attributes
 
         if number is True, create an attribute with the next available
@@ -589,9 +589,8 @@ class Driver(object):
 
         An optional subkey can also be specified. Subkeys don't affect
         numbering by default.
-
-        An optional datatype is not used and kept as future reference
         """
+
         if isinstance(key, Attribute):
             raise Exception("Unsupported Operation.  You can no longer add an attribute directly")
 
