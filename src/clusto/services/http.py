@@ -82,9 +82,23 @@ class EntityAPI(object):
         Add an attribute to this object.
 
         Requires HTTP parameters "key" and "value"
-        Optional parameters are "subkey" and "number"
+        Optional parameters are "subkey", "number" and "datatype"
+        where "datatype" could be "relation", "int" or string by default
         '''
         kwargs = dict(request.params.items())
+        datatype = kwargs.get('datatype', None)
+        kwargs.pop('datatype', None)
+
+        if datatype == 'relation':
+            try:
+                kwargs['value'] = clusto.get_by_name(kwargs['value'].rsplit('/', 1)[1])
+            except LookupError:
+                return Response(status=400, body='400 Element Not Found\n')
+        elif datatype == 'int':
+            kwargs['value'] = int(kwargs['value'])
+        else:
+            kwargs['value'] = str(kwargs['value'])
+
         self.obj.add_attr(**kwargs)
         return self.show(request)
 
