@@ -26,6 +26,8 @@ class Console(script_helper.Script):
         parser.add_argument('--user', '-u',
             help='SSH User (you can also set this in clusto.conf '
                  'in console.user: --user > clusto.conf:console.user')
+        parser.add_argument('--force', '-f', action='store_true',
+            default=False, help='Force taking over the console session')
         parser.add_argument('server', nargs=1,
             help='Object to console to (IP or name)')
 
