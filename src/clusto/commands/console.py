@@ -26,6 +26,8 @@ class Console(script_helper.Script):
         parser.add_argument('--user', '-u',
             help='SSH User (you can also set this in clusto.conf '
                  'in console.user: --user > clusto.conf:console.user')
+        parser.add_argument('--force', '-f', action='store_true',
+            help='Force taking over the console session')
         parser.add_argument('server', nargs=1,
             help='Object to console to (IP or name)')
 
@@ -51,8 +53,9 @@ class Console(script_helper.Script):
         else:
             self.debug('Grabbing user from config file or default')
             user = self.get_conf('console.user', user)
+        force = args.force or False
         self.debug('User is "%s"' % user)
-        return(server.console(ssh_user=user))
+        return(server.console(ssh_user=user, force=force))
 
 
 def main():
