@@ -54,7 +54,7 @@ class AttrTree(script_helper.Script):
 
         # Clusto object attributes.
         for x in obj.attrs():
-            txt += "\n{indent} {key} / {subkey} : {value}".format(
+            txt += "\n{indent} {key}.{subkey} = {value}".format(
                 indent=" " * (indent) + "|",
                 key=colors.GREEN + str(x.key) + colors.RESET,
                 subkey=colors.MAGENTA + str(x.subkey) + colors.RESET,
