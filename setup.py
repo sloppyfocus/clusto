@@ -51,7 +51,6 @@ setuptools.setup(
         os.path.join(srcdir, 'scripts', 'clusto-update-db'),
         os.path.join(srcdir, 'scripts', 'clusto-dhcpd'),
         os.path.join(srcdir, 'scripts', 'clusto-httpd'),
-        os.path.join(srcdir, 'scripts', 'clusto-attr-tree'),
       ],
       test_suite = "clusto.test.alltests.gettests",
 )
