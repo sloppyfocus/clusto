@@ -75,7 +75,7 @@ class AttrTree(script_helper.Script):
                 value=colors.YELLOW + str(x.value) + colors.RESET
             )
 
-        print("{}\n".format(txt))
+        print(txt)
 
     def print_tree(self, root, attrs, direction, indent=0, color=False):
         """Print parent or contained object attributes, recursively."""
