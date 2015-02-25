@@ -22,7 +22,7 @@ conf = clusto.script_helper.load_config(os.environ.get('CLUSTOCONFIG', '/etc/clu
 clusto.connect(conf)
 
 
-def unclusto(obj):
+def unclusto(obj, prefetch_attrs=None):
     '''
     Convert an object to a representation that can be safely serialized into
     JSON.
@@ -38,7 +38,16 @@ def unclusto(obj):
             'datatype': obj.datatype
         }
     if issubclass(obj.__class__, Driver):
-        return '/%s/%s' % (obj.type, obj.name)
+        if not prefetch_attrs:
+            return '/%s/%s' % (obj.type, obj.name)
+
+        result = {
+            'attrs': []
+        }
+        for prefetch_attr in prefetch_attrs:
+            for attr in obj.attrs(**prefetch_attr):
+                result['attrs'].append(unclusto(attr))
+        return {'/%s/%s' % (obj.type, obj.name): result}
     return str(obj)
 
 
@@ -178,7 +187,7 @@ class EntityAPI(object):
         self.obj.remove(device)
         return self.show(request)
 
-    def show(self, request):
+    def show(self, request, prefetch_attrs=None):
         '''
         Returns attributes and actions available for this object.
         '''
@@ -190,8 +199,8 @@ class EntityAPI(object):
         for x in self.obj.attrs():
             attrs.append(unclusto(x))
         result['attrs'] = attrs
-        result['contents'] = [unclusto(x) for x in self.obj.contents()]
-        result['parents'] = [unclusto(x) for x in self.obj.parents()]
+        result['contents'] = [unclusto(x, prefetch_attrs) for x in self.obj.contents()]
+        result['parents'] = [unclusto(x, prefetch_attrs) for x in self.obj.parents()]
         result['actions'] = [x for x in dir(self) if not x.startswith('_') and callable(getattr(self, x))]
 
         return dumps(request, result)
@@ -299,7 +308,13 @@ class QueryAPI(object):
         name = request.params['name']
         obj = clusto.get_by_name(name)
         api = EntityAPI(obj)
-        return api.show(request)
+        prefetch_attrs = None
+        if 'prefetch_attrs' in request.params:
+            # Prefetch all the matching attributes while pulling data
+            # Prefetch format would like something like
+            #   prefetch_attrs=[{'key': 'disk', 'subkey': 'make'}, {'key': 'system', 'subkey': 'version'}]
+            prefetch_attrs = loads(request, request.params['prefetch_attrs'])
+        return api.show(request, prefetch_attrs)
 
     @classmethod
     def get(self, request):
@@ -325,7 +340,14 @@ class QueryAPI(object):
         else:
             clusto_types = None
 
-        result = [unclusto(x) for x in clusto.get_from_pools(pools, clusto_types)]
+        prefetch_attrs = None
+        if 'prefetch_attrs' in request.params:
+            # Prefetch all the matching attributes while pulling data
+            # Prefetch format would like something like
+            #   prefetch_attrs=[{'key': 'disk', 'subkey': 'make'}, {'key': 'system', 'subkey': 'version'}]
+            prefetch_attrs = loads(request, request.params['prefetch_attrs'])
+
+        result = [unclusto(x, prefetch_attrs) for x in clusto.get_from_pools(pools, clusto_types)]
         return dumps(request, result)
 
     @classmethod
