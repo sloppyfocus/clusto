@@ -20,7 +20,10 @@ class Pool(script_helper.Script):
         script_helper.Script.__init__(self)
 
     def _get_pool(self, pool):
-        p = clusto.get_by_name(pool)
+        try:
+            p = clusto.get_by_name(pool)
+        except LookupError:
+            p = None
         self.debug('%s is %s' % (pool, p))
         if not p or not isinstance(p, clusto.drivers.pool.Pool):
             self.error('The pool "%s" does not exist or is not a pool' % pool)
