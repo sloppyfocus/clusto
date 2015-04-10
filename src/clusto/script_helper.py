@@ -16,6 +16,7 @@ import logging
 import traceback
 import os
 import sys
+import textwrap
 import clusto
 
 
@@ -50,7 +51,7 @@ class Script(object):
         '''
 
         if self.__class__.__doc__:
-            help_string = self.__class__.__doc__
+            help_string = textwrap.dedent(self.__class__.__doc__)
         else:
             help_string = '%s command help' % self.__class__.__name__.capitalize()
         return help_string
