@@ -41,12 +41,12 @@ setuptools.setup(
             'clusto-initdb = clusto.commands.initdb:main',
             'clusto-shell = clusto.commands.shell:main',
             'clusto-list-all = clusto.commands.list_all:main',
+            'clusto-tree = clusto.commands.tree:main',
         ],
     },
     zip_safe = False,
     package_dir = { '': 'src' },
     scripts = [
-        os.path.join(srcdir, 'scripts', 'clusto-tree'),
         os.path.join(srcdir, 'scripts', 'clusto-update-info'),
         os.path.join(srcdir, 'scripts', 'clusto-update-db'),
         os.path.join(srcdir, 'scripts', 'clusto-dhcpd'),
