@@ -33,7 +33,7 @@ class Colors(object):
             return ''
 
 
-class AttrTree(script_helper.Script):
+class Tree(script_helper.Script):
 
     """
     Display clusto objects, recursively, with attributes, and/or in color.
@@ -42,7 +42,6 @@ class AttrTree(script_helper.Script):
     optionally also queries parent or contained objects, recursively.
     It displays a simple, human-readable indented tree, with different
     colors for clusto keys, subkeys, and values if color is enabled.
-
     """
 
     def print_obj(self, obj, attrs, indent=0, color=False):
@@ -117,7 +116,7 @@ class AttrTree(script_helper.Script):
 
 def main():
     """Execute script with clusto script_helper."""
-    attr, args = script_helper.init_arguments(AttrTree)
+    attr, args = script_helper.init_arguments(Tree)
     return attr.run(args)
 
 if __name__ == '__main__':
