@@ -27,8 +27,10 @@ def unclusto(obj, prefetch_attrs=None):
     Convert an object to a representation that can be safely serialized into
     JSON.
     '''
-    if type(obj) in (str, unicode, int) or obj == None:
+    if type(obj) in (str, unicode, int) or obj is None:
         return obj
+    if type(obj) in (list, dict):
+        return json.dumps(obj)
     if isinstance(obj, clusto.Attribute):
         return {
             'key': obj.key,
