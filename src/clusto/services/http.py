@@ -14,6 +14,8 @@ import os
 from clusto.drivers import Driver, IPManager
 import clusto.script_helper
 import clusto
+from clusto.schema import Attribute
+from collections import defaultdict
 
 from clusto.services.config import conf, get_logger
 log = get_logger('clusto.http', 'INFO')
@@ -51,6 +53,56 @@ def unclusto(obj, prefetch_attrs=None):
                 result['attrs'].append(unclusto(attr))
         return {'/%s/%s' % (obj.type, obj.name): result}
     return str(obj)
+
+def mass_unclusto(lst, prefetch_attrs):
+    '''
+    A more efficient form of unclusto for lists of objects to be unclusto-ed
+    '''
+    # We want to fetch all attrs for all objects in lst at once, so divide and conquer by fetching
+    # attrs for objects that can have attrs, and simply unclusto basic types
+    prefetchable, nonprefetchable = classify_prefetchable(lst)
+
+    # Get all entity_ids for prefetching and build a mapping back to the base object
+    entity_map = {}
+    for obj in prefetchable:
+        entity_map[obj.entity.entity_id] = obj
+    entity_ids_to_prefetch = entity_map.keys()
+
+    # Get all attributes, filter by the ones we're interested in
+    attr_map = defaultdict(list)
+    all_prefetched_attrs = Attribute.query().filter(Attribute.entity_id.in_(entity_ids_to_prefetch)).all()
+    filtered_prefetched_attrs = []
+    for prefetch_attr in prefetch_attrs:
+        filtered_prefetched_attrs.extend(Driver.attr_filter(all_prefetched_attrs, **prefetch_attr))
+
+    # Build a list of attributes for each entity by entity_id
+    for attr in filtered_prefetched_attrs:
+        attr_map[attr.entity.entity_id].append(attr)
+
+    all_results = [unclusto(x) for x in nonprefetchable]
+    for k, v in entity_map.items():
+        attrs = []
+        for attr in attr_map[k]:
+            attrs.append(unclusto(attr))
+        all_results.append({'/%s/%s' % (v.type, v.name): { 'attrs': attrs }})
+    return all_results
+
+    
+
+
+def classify_prefetchable(lst):
+    '''
+    Takes a list of clusto objects, and returns a list of objects with
+    prefetchable attrs and a list of objects without prefetchable attrs.
+    '''
+    prefetchable = []
+    nonprefetchable = []
+    for item in lst:
+        if issubclass(item.__class__, Driver):
+            prefetchable.append(item)
+        else:
+            nonprefetchable.append(item)
+    return prefetchable, nonprefetchable
 
 
 def dumps(request, obj, **kwargs):
@@ -201,11 +253,54 @@ class EntityAPI(object):
         for x in self.obj.attrs():
             attrs.append(unclusto(x))
         result['attrs'] = attrs
-        result['contents'] = [unclusto(x, prefetch_attrs) for x in self.obj.contents()]
-        result['parents'] = [unclusto(x, prefetch_attrs) for x in self.obj.parents()]
+        contents = self.obj.contents()
+        parents = self.obj.parents()
+
+        result['contents'] = mass_unclusto(contents, prefetch_attrs)
+        result['parents'] = mass_unclusto(parents, prefetch_attrs)
         result['actions'] = [x for x in dir(self) if not x.startswith('_') and callable(getattr(self, x))]
 
         return dumps(request, result)
+
+    def rename(self, request):
+        '''
+        Renames an object and returns the new object.
+
+        Example: /server/exampleserver/rename?object=/server/newname
+        '''
+        device_type, device_name = request.params['object'].strip('/').split('/')
+        if self.obj.type != device_type:
+            return Response(status=400, body='400 Renamed object must match type of original object\n')
+        if self.obj.name == device_name:
+            # The renamed object is the same as the current object, just show the object
+            return self.show(request)
+        try:
+            clusto.begin_transaction()
+            obj = clusto.get_by_name(device_name)
+            return Response(status=400, body='400 An entity with the new name "%s" already exists: %s\n' % (device_name, repr(obj)))
+        except LookupError, e:
+            try:
+              clusto.rename(self.obj.name, device_name)
+              clusto.commit()
+            except Exception, x:
+              clusto.rollback_transaction()
+              return Response(status=500, body='500 An error occured when renaming %s\n' % (repr(obj)))
+        try:
+            obj = clusto.get_by_name(device_name)
+            result = {}
+            result['object'] = "/%s/%s" % (obj.type, device_name)
+            result['driver'] = obj.driver
+            attrs = []
+            for x in obj.attrs():
+                attrs.append(unclusto(x))
+            result['attrs'] = attrs
+            result['contents'] = [unclusto(x) for x in obj.contents()]
+            result['parents'] = [unclusto(x) for x in obj.parents()]
+            result['actions'] = [x for x in dir(self) if not x.startswith('_') and callable(getattr(self, x))]
+            return dumps(request, result)
+        except LookupError, e:
+            return Response(status=500, body='500 Lookup for renamed object failed "%s"\n' % (device_name))            
+ 
 
 
 class PortInfoAPI(EntityAPI):
